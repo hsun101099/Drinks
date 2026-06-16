@@ -159,6 +159,76 @@ const menuData = {
         ]
       }
     ]
+  },
+
+  'macu': {
+    name: 'MACU',
+    desc: '台灣茶飲品牌',
+    logo: 'images/logo-macu.png',
+    categories: [
+      {
+        title: '🧋 招牌系列',
+        items: [
+          { name: '菜單更新中', note: '敬請期待', price: '-' },
+        ]
+      }
+    ]
+  },
+
+  'kebuke': {
+    name: '可不可熟成紅茶',
+    desc: 'KEBUKE Tea Company',
+    logo: 'images/logo-kebuke.png',
+    categories: [
+      {
+        title: '🍵 招牌系列',
+        items: [
+          { name: '菜單更新中', note: '敬請期待', price: '-' },
+        ]
+      }
+    ]
+  },
+
+  'guiji': {
+    name: '龜記 GUIJI',
+    desc: '龜記茶飲',
+    logo: 'images/logo-guiji.png',
+    categories: [
+      {
+        title: '🧋 招牌系列',
+        items: [
+          { name: '菜單更新中', note: '敬請期待', price: '-' },
+        ]
+      }
+    ]
+  },
+
+  'qingfuquan': {
+    name: '清福全',
+    desc: '清福全茶飲',
+    logo: 'images/logo-qingfuquan.png',
+    categories: [
+      {
+        title: '🍵 招牌系列',
+        items: [
+          { name: '菜單更新中', note: '敬請期待', price: '-' },
+        ]
+      }
+    ]
+  },
+
+  'comebuy': {
+    name: 'COMEBUY',
+    desc: '甘蔗青茶專賣',
+    logo: 'images/logo-comebuy.png',
+    categories: [
+      {
+        title: '🧃 招牌系列',
+        items: [
+          { name: '菜單更新中', note: '敬請期待', price: '-' },
+        ]
+      }
+    ]
   }
 };
 
