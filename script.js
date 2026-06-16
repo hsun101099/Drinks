@@ -699,15 +699,22 @@ function parsePrice(priceStr, size) {
 ══════════════════════════════════════════════ */
 const session = { code: null, name: null };
 
-function initSession() {
+async function initSession() {
   const saved = localStorage.getItem('drinks_session');
   if (saved) {
     try {
       const s = JSON.parse(saved);
+      if (!s.code || !s.name) throw 'invalid';
+      const doc = await db.collection('sessions').doc(s.code).get();
+      if (!doc.exists) {
+        localStorage.removeItem('drinks_session');
+        showSessionSetup();
+        return;
+      }
       session.code = s.code; session.name = s.name;
       showSessionBanner();
       document.getElementById('sessionOverlay').classList.add('hidden');
-    } catch { showSessionSetup(); }
+    } catch { localStorage.removeItem('drinks_session'); showSessionSetup(); }
   } else {
     showSessionSetup();
   }
