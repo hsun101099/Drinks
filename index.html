@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>飲料地圖</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <button class="nav-menu-btn">
+      <span class="hamburger"></span>
+      <span class="hamburger"></span>
+      <span class="hamburger"></span>
+    </button>
+    <span class="nav-title">選單</span>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" title="登入">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" title="購物車">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <p class="hero-sub">探索你的</p>
+        <h1 class="hero-title">特調新滋味</h1>
+        <p class="hero-desc">精選台灣人氣飲料品牌，一站滿足你的味蕾</p>
+      </div>
+      <div class="hero-illustration">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        <div class="hero-cup">
+          <svg viewBox="0 0 120 160" width="120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="30" width="80" height="110" rx="12" fill="#f5e6c8" stroke="#c9a96e" stroke-width="2"/>
+            <rect x="20" y="30" width="80" height="25" rx="12" fill="#c9a96e" opacity="0.5"/>
+            <ellipse cx="60" cy="30" rx="40" ry="8" fill="#c9a96e" opacity="0.7"/>
+            <rect x="50" y="10" width="20" height="22" rx="4" fill="#e8d5b0" stroke="#c9a96e" stroke-width="1.5"/>
+            <circle cx="40" cy="90" r="6" fill="#8db4a0" opacity="0.6"/>
+            <circle cx="60" cy="100" r="7" fill="#8db4a0" opacity="0.6"/>
+            <circle cx="80" cy="88" r="5" fill="#8db4a0" opacity="0.6"/>
+            <circle cx="50" cy="108" r="5" fill="#8db4a0" opacity="0.6"/>
+            <circle cx="72" cy="110" r="6" fill="#8db4a0" opacity="0.6"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="hero-dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </section>
+
+  <!-- Shop Grid -->
+  <section class="shops-section">
+    <h2 class="section-title">選擇飲料店</h2>
+    <div class="shops-grid" id="shopsGrid">
+
+      <div class="shop-card" data-shop="50lan">
+        <div class="card-logo">
+          <img src="images/logo-50lan.png" alt="50嵐" />
+        </div>
+        <div class="card-info">
+          <h3 class="card-name">50嵐</h3>
+          <p class="card-desc">台灣在地連鎖茶飲</p>
+          <span class="card-badge">珍珠奶茶</span>
+          <span class="card-badge">各式茶飲</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <div class="shop-card" data-shop="coco">
+        <div class="card-logo">
+          <img src="images/logo-coco.png" alt="CoCo都可" />
+        </div>
+        <div class="card-info">
+          <h3 class="card-name">CoCo 都可</h3>
+          <p class="card-desc">多元口味選擇</p>
+          <span class="card-badge">奶茶系列</span>
+          <span class="card-badge">鮮果茶</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <div class="shop-card" data-shop="qingshan">
+        <div class="card-logo">
+          <img src="images/logo-qingshan.png" alt="青山" />
+        </div>
+        <div class="card-info">
+          <h3 class="card-name">青山</h3>
+          <p class="card-desc">青茶專業製作</p>
+          <span class="card-badge">青茶</span>
+          <span class="card-badge">手作茶飲</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+      <div class="shop-card" data-shop="milkshop">
+        <div class="card-logo">
+          <img src="images/logo-milkshop.png" alt="Milkshop迷客夏" />
+        </div>
+        <div class="card-info">
+          <h3 class="card-name">Milkshop 迷客夏</h3>
+          <p class="card-desc">新鮮牧場直送</p>
+          <span class="card-badge">鮮乳茶</span>
+          <span class="card-badge">季節限定</span>
+        </div>
+        <div class="card-arrow">→</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Menu Modal -->
+  <div class="modal-overlay" id="menuModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-logo-wrap">
+          <img id="modalLogo" src="" alt="" />
+        </div>
+        <div>
+          <h2 id="modalTitle" class="modal-title"></h2>
+          <p id="modalDesc" class="modal-subtitle"></p>
+        </div>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="menu-categories" id="menuCategories"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
