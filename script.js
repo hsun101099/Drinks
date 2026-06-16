@@ -688,14 +688,6 @@ function parsePrice(priceStr, size) {
 ══════════════════════════════════════════════ */
 const session = { code: null, name: null };
 
-const FUN_WORDS = ['奶茶','珍珠','波霸','冬瓜','椰果','布丁','烏龍','茉莉','芒果','草莓','抹茶','荔枝'];
-
-function generateCode() {
-  const w1 = FUN_WORDS[Math.floor(Math.random() * FUN_WORDS.length)];
-  const w2 = FUN_WORDS[Math.floor(Math.random() * FUN_WORDS.length)];
-  return w1 + w2 + Math.floor(Math.random() * 90 + 10);
-}
-
 function initSession() {
   const saved = localStorage.getItem('drinks_session');
   if (saved) {
@@ -711,16 +703,14 @@ function initSession() {
 }
 
 function showSessionSetup() {
-  const overlay = document.getElementById('sessionOverlay');
-  overlay.classList.remove('hidden');
-  document.getElementById('createCode').value = generateCode();
+  document.getElementById('sessionOverlay').classList.remove('hidden');
 }
 
 function showSessionBanner() {
   const banner = document.getElementById('sessionBanner');
   banner.style.display = 'flex';
   document.getElementById('sessionBannerText').textContent =
-    `👥 ${session.name} 的飲料團・暗號：${session.code}`;
+    `👥 ${session.name}・密碼：${session.code}`;
 }
 
 function saveSession(name, code) {
@@ -901,19 +891,21 @@ function renderStep3(shopId) {
       <div class="customize-section">
         <label class="customize-label">🍬 甜度</label>
         <div class="option-pills" id="sweetnessPills">
-          ${data.sweetness.map((s, i) => `
-            <button class="option-pill ${i === data.sweetness.length - 1 ? 'selected' : ''}" data-val="${s}">${s}</button>
+          ${data.sweetness.map(s => `
+            <button class="option-pill" data-val="${s}">${s}</button>
           `).join('')}
         </div>
+        <p class="validate-msg" id="sweetMsg">請選擇甜度</p>
       </div>
 
       <div class="customize-section">
         <label class="customize-label">🧊 冰量</label>
         <div class="option-pills" id="icePills">
-          ${data.ice.map((ic, i) => `
-            <button class="option-pill ${i === 3 ? 'selected' : ''}" data-val="${ic}">${ic}</button>
+          ${data.ice.map(ic => `
+            <button class="option-pill" data-val="${ic}">${ic}</button>
           `).join('')}
         </div>
+        <p class="validate-msg" id="iceMsg">請選擇冰量</p>
       </div>
 
       ${hasToppings ? `
@@ -952,8 +944,8 @@ function renderStep3(shopId) {
   state.pendingItem = {
     ...item,
     size: defaultSize,
-    sweetness: data.sweetness[data.sweetness.length - 1],
-    ice: data.ice[3] || data.ice[0],
+    sweetness: null,
+    ice: null,
     toppings: [],
     notes: '',
     qty: 1,
@@ -1014,6 +1006,26 @@ function renderStep3(shopId) {
   });
 
   panel.querySelector('#addToCartBtn').addEventListener('click', () => {
+    let valid = true;
+    const sPills = panel.querySelector('#sweetnessPills');
+    const iPills = panel.querySelector('#icePills');
+    const sMsg = panel.querySelector('#sweetMsg');
+    const iMsg = panel.querySelector('#iceMsg');
+
+    if (!state.pendingItem.sweetness) {
+      valid = false;
+      sPills.classList.add('flash'); sMsg.classList.add('show');
+      setTimeout(() => sPills.classList.remove('flash'), 400);
+    } else { sMsg.classList.remove('show'); }
+
+    if (!state.pendingItem.ice) {
+      valid = false;
+      iPills.classList.add('flash'); iMsg.classList.add('show');
+      setTimeout(() => iPills.classList.remove('flash'), 400);
+    } else { iMsg.classList.remove('show'); }
+
+    if (!valid) return;
+
     const base = parsePrice(state.pendingItem.price, state.pendingItem.size);
     const toppingExtra = state.pendingItem.toppings.reduce((s, t) => s + t.price, 0);
     state.pendingItem.unitPrice = base + toppingExtra;
@@ -1161,15 +1173,11 @@ document.getElementById('stabJoin').addEventListener('click', () => {
   document.getElementById('createPanel').classList.remove('active');
 });
 
-document.getElementById('genCodeBtn').addEventListener('click', () => {
-  document.getElementById('createCode').value = generateCode();
-});
-
 document.getElementById('createBtn').addEventListener('click', () => {
   const name = document.getElementById('createName').value.trim();
   const code = document.getElementById('createCode').value.trim();
   if (!name) { alert('請輸入你的名字'); return; }
-  if (!code) { alert('請設定暗號'); return; }
+  if (!code || !/^\d+$/.test(code)) { alert('密碼請輸入純數字'); return; }
   saveSession(name, code);
 });
 
@@ -1177,9 +1185,51 @@ document.getElementById('joinBtn').addEventListener('click', () => {
   const name = document.getElementById('joinName').value.trim();
   const code = document.getElementById('joinCode').value.trim();
   if (!name) { alert('請輸入你的名字'); return; }
-  if (!code) { alert('請輸入暗號'); return; }
+  if (!code || !/^\d+$/.test(code)) { alert('密碼請輸入純數字'); return; }
   saveSession(name, code);
 });
+
+// Order manager
+document.getElementById('orderMgrBtn').addEventListener('click', () => {
+  showOrderManager();
+});
+
+document.getElementById('orderMgrClose').addEventListener('click', () => {
+  document.getElementById('orderMgrOverlay').classList.remove('open');
+});
+
+function showOrderManager() {
+  const content = document.getElementById('orderMgrContent');
+  if (!session.code) { alert('請先建立或加入訂單'); return; }
+  const key = 'drinks_orders_' + session.code;
+  const allOrders = JSON.parse(localStorage.getItem(key) || '{}');
+  let grandTotal = 0;
+
+  if (Object.keys(allOrders).length === 0) {
+    content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">目前還沒有人送出訂單</p>';
+  } else {
+    content.innerHTML = Object.entries(allOrders).map(([member, orders]) => {
+      return orders.map(order => {
+        grandTotal += order.total || 0;
+        return `<div class="order-member-group">
+          <div class="order-member-name">${member}（$${order.total || 0}）</div>
+          ${order.items.map(it => `
+            <div class="order-item-mini">
+              <div>
+                <div>${it.name} × ${it.qty}</div>
+                <div class="order-item-detail">${it.size}｜${it.sweetness}｜${it.ice}${it.toppings.length ? '｜' + it.toppings.map(t=>t.name).join('、') : ''}</div>
+                ${it.notes ? '<div class="order-item-detail">備註：' + it.notes + '</div>' : ''}
+              </div>
+              <span style="font-weight:600;color:var(--brown)">$${(it.unitPrice||0)*it.qty}</span>
+            </div>`).join('')}
+        </div>`;
+      }).join('');
+    }).join('');
+  }
+
+  document.getElementById('orderMgrTotal').textContent = `$${grandTotal}`;
+  document.getElementById('orderMgrOverlay').classList.add('open');
+}
 
 document.getElementById('sessionChangeBtn').addEventListener('click', () => {
   localStorage.removeItem('drinks_session');

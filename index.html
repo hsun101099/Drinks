@@ -16,31 +16,27 @@
     <div class="session-box">
       <div class="session-icon">🧋</div>
       <h1 class="session-app-name">點飲料吧！</h1>
-      <p class="session-app-sub">先建立或加入一個飲料團<br>不同的團用不同暗號互不干擾</p>
 
       <div class="stabs">
-        <button class="stab active" id="stabCreate">建立新團購</button>
-        <button class="stab" id="stabJoin">加入團購</button>
+        <button class="stab active" id="stabCreate">建立新訂單</button>
+        <button class="stab" id="stabJoin">加入訂單</button>
       </div>
 
       <div class="spanel active" id="createPanel">
         <label class="field-label">你的名字</label>
         <input class="field-input" id="createName" placeholder="例：阿明、小花…" maxlength="12" />
-        <label class="field-label">設定暗號（可自訂）</label>
-        <div class="code-row">
-          <input class="field-input" id="createCode" placeholder="例：奶茶愛好者" maxlength="20" />
-          <button class="gen-btn" id="genCodeBtn">隨機</button>
-        </div>
-        <button class="session-submit-btn" id="createBtn">建立團購 →</button>
+        <label class="field-label">設定密碼</label>
+        <input class="field-input" id="createCode" placeholder="請輸入數字密碼" maxlength="10" inputmode="numeric" pattern="[0-9]*" />
+        <button class="session-submit-btn" id="createBtn">建立新訂單 →</button>
       </div>
 
       <div class="spanel" id="joinPanel">
         <label class="field-label">你的名字</label>
         <input class="field-input" id="joinName" placeholder="例：阿明、小花…" maxlength="12" />
-        <label class="field-label">輸入朋友的暗號</label>
-        <input class="field-input" id="joinCode" placeholder="請輸入暗號" maxlength="20" />
+        <label class="field-label">輸入訂單密碼</label>
+        <input class="field-input" id="joinCode" placeholder="請輸入數字密碼" maxlength="10" inputmode="numeric" pattern="[0-9]*" />
         <p class="join-hint" id="joinHint"></p>
-        <button class="session-submit-btn" id="joinBtn">加入團購 →</button>
+        <button class="session-submit-btn" id="joinBtn">加入訂單 →</button>
       </div>
     </div>
   </div>
@@ -71,6 +67,7 @@
   <!-- Session Banner -->
   <div class="session-banner" id="sessionBanner" style="display:none">
     <span id="sessionBannerText"></span>
+    <button class="session-change-btn" id="orderMgrBtn">管理訂單</button>
     <button class="session-change-btn" id="sessionChangeBtn">換團</button>
   </div>
 
@@ -80,15 +77,6 @@
         <p class="hero-sub">歡迎來到</p>
         <h1 class="hero-title">點飲料吧！</h1>
         <p class="hero-desc">精選台灣人氣品牌，團購最方便</p>
-      </div>
-      <div class="hero-illustration">
-        <img src="images/hero-illustration.jpg" alt="" class="hero-img"
-          onerror="this.style.display='none';document.querySelector('.hero-img-fallback').style.display='flex'">
-        <div class="hero-img-fallback">
-          <span style="font-size:3rem">🧋</span>
-          <span style="font-size:2rem;margin-top:8px">🍵</span>
-          <span style="font-size:1.6rem;margin-top:4px">🍓</span>
-        </div>
       </div>
     </div>
     <div class="hero-dots">
@@ -206,6 +194,19 @@
       </div>
       <button class="summary-confirm-btn" id="summaryConfirm">確認送出訂單</button>
       <button class="summary-back-btn" id="summaryBack">← 繼續點餐</button>
+    </div>
+  </div>
+
+  <!-- Order Manager Overlay -->
+  <div class="summary-overlay" id="orderMgrOverlay">
+    <div class="summary-box">
+      <h2 class="summary-title">📋 管理訂單</h2>
+      <div id="orderMgrContent"></div>
+      <div class="summary-total-row" id="orderMgrTotalRow">
+        <span>全部合計</span>
+        <span id="orderMgrTotal"></span>
+      </div>
+      <button class="summary-back-btn" id="orderMgrClose">← 關閉</button>
     </div>
   </div>
 
