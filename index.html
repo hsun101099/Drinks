@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- Navigation -->
   <nav class="navbar">
     <button class="nav-menu-btn">
       <span class="hamburger"></span>
@@ -32,7 +31,6 @@
     </div>
   </nav>
 
-  <!-- Hero Banner -->
   <section class="hero">
     <div class="hero-content">
       <div class="hero-text">
@@ -66,90 +64,118 @@
     </div>
   </section>
 
-  <!-- Shop Grid -->
   <section class="shops-section">
     <div class="shops-grid" id="shopsGrid">
 
       <div class="shop-card" data-shop="50lan">
-        <div class="card-logo">
-          <img src="images/logo-50lan.png" alt="50嵐" />
-        </div>
+        <div class="card-logo"><img src="images/logo-50lan.png" alt="50嵐" /></div>
         <h3 class="card-name">50嵐</h3>
       </div>
-
       <div class="shop-card" data-shop="coco">
-        <div class="card-logo">
-          <img src="images/logo-coco.png" alt="CoCo都可" />
-        </div>
+        <div class="card-logo"><img src="images/logo-coco.png" alt="CoCo都可" /></div>
         <h3 class="card-name">CoCo 都可</h3>
       </div>
-
       <div class="shop-card" data-shop="qingshan">
-        <div class="card-logo">
-          <img src="images/logo-qingshan.png" alt="青山" />
-        </div>
+        <div class="card-logo"><img src="images/logo-qingshan.png" alt="青山" /></div>
         <h3 class="card-name">青山</h3>
       </div>
-
       <div class="shop-card" data-shop="milkshop">
-        <div class="card-logo">
-          <img src="images/logo-milkshop.png" alt="Milkshop迷客夏" />
-        </div>
+        <div class="card-logo"><img src="images/logo-milkshop.png" alt="Milkshop迷客夏" /></div>
         <h3 class="card-name">迷客夏</h3>
       </div>
-
       <div class="shop-card" data-shop="macu">
-        <div class="card-logo">
-          <img src="images/logo-macu.png" alt="MACU" />
-        </div>
+        <div class="card-logo"><img src="images/logo-macu.png" alt="MACU" /></div>
         <h3 class="card-name">MACU</h3>
       </div>
-
       <div class="shop-card" data-shop="kebuke">
-        <div class="card-logo">
-          <img src="images/logo-kebuke.png" alt="可不可熟成紅茶" />
-        </div>
+        <div class="card-logo"><img src="images/logo-kebuke.png" alt="可不可熟成紅茶" /></div>
         <h3 class="card-name">可不可熟成紅茶</h3>
       </div>
-
       <div class="shop-card" data-shop="guiji">
-        <div class="card-logo">
-          <img src="images/logo-guiji.png" alt="龜記" />
-        </div>
+        <div class="card-logo"><img src="images/logo-guiji.png" alt="龜記" /></div>
         <h3 class="card-name">龜記 GUIJI</h3>
       </div>
-
       <div class="shop-card" data-shop="qingfuquan">
-        <div class="card-logo">
-          <img src="images/logo-qingfuquan.png" alt="清福全" />
-        </div>
-        <h3 class="card-name">清福全</h3>
+        <div class="card-logo"><img src="images/logo-qingfuquan.png" alt="清心福全" /></div>
+        <h3 class="card-name">清心福全</h3>
       </div>
-
       <div class="shop-card" data-shop="comebuy">
-        <div class="card-logo">
-          <img src="images/logo-comebuy.png" alt="COMEBUY" />
-        </div>
+        <div class="card-logo"><img src="images/logo-comebuy.png" alt="COMEBUY" /></div>
         <h3 class="card-name">COMEBUY</h3>
       </div>
 
     </div>
   </section>
 
-  <!-- Menu Modal -->
+  <!-- ── 3-Step Modal ── -->
   <div class="modal-overlay" id="menuModal">
     <div class="modal">
+
+      <!-- Drag Handle -->
+      <div class="modal-handle"></div>
+
+      <!-- Header -->
       <div class="modal-header">
-        <div class="modal-logo-wrap">
-          <img id="modalLogo" src="" alt="" />
-        </div>
-        <div>
-          <h2 id="modalTitle" class="modal-title"></h2>
-          <p id="modalDesc" class="modal-subtitle"></p>
+        <div class="modal-shop-row">
+          <div class="modal-logo-wrap">
+            <img id="modalLogo" src="" alt="" />
+          </div>
+          <div>
+            <h2 id="modalTitle" class="modal-title"></h2>
+            <p id="modalDesc" class="modal-subtitle"></p>
+          </div>
         </div>
         <button class="modal-close" id="modalClose">✕</button>
       </div>
-      <div class="menu-categories" id="menuCategories"></div>
+
+      <!-- Step Indicator -->
+      <div class="steps-bar">
+        <div class="step-item" id="si1">
+          <div class="step-num">1</div>
+          <span class="step-lbl">瀏覽菜單</span>
+        </div>
+        <div class="step-track"><div class="step-fill" id="fill1"></div></div>
+        <div class="step-item" id="si2">
+          <div class="step-num">2</div>
+          <span class="step-lbl">選擇品項</span>
+        </div>
+        <div class="step-track"><div class="step-fill" id="fill2"></div></div>
+        <div class="step-item" id="si3">
+          <div class="step-num">3</div>
+          <span class="step-lbl">客製選項</span>
+        </div>
+      </div>
+
+      <!-- Panel Container -->
+      <div class="panel-container">
+        <div class="step-panel" id="panel1"></div>
+        <div class="step-panel" id="panel2"></div>
+        <div class="step-panel" id="panel3"></div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="foot-btn back-btn" id="btnBack">← 返回</button>
+        <div class="cart-pill" id="cartPill">
+          <span id="cartCount">0</span> 項・$<span id="cartTotal">0</span>
+        </div>
+        <button class="foot-btn next-btn" id="btnNext">開始點餐 →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Order Summary Overlay -->
+  <div class="summary-overlay" id="summaryOverlay">
+    <div class="summary-box">
+      <h2 class="summary-title">🧾 訂單明細</h2>
+      <div class="summary-items" id="summaryItems"></div>
+      <div class="summary-total-row">
+        <span>合計</span>
+        <span id="summaryTotal"></span>
+      </div>
+      <button class="summary-confirm-btn" id="summaryConfirm">確認送出訂單</button>
+      <button class="summary-back-btn" id="summaryBack">← 繼續點餐</button>
     </div>
   </div>
 
