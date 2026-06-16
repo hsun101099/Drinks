@@ -2,40 +2,78 @@ const menuData = {
 
   '50lan': {
     name: '50嵐',
-    desc: '台灣在地連鎖茶飲',
+    desc: '好茶陪伴你的日常',
     logo: 'images/logo-50lan.png',
     categories: [
       {
-        title: '🧋 珍珠系列',
+        title: '🍵 找好茶',
         items: [
-          { name: '珍珠奶茶', note: '經典必點', price: '$50' },
-          { name: '珍珠紅茶拿鐵', note: '順口香醇', price: '$55' },
-          { name: '珍珠綠茶拿鐵', note: '清爽回甘', price: '$55' },
+          { name: '茉莉綠茶', note: '', price: 'M$35 / L$40' },
+          { name: '阿隆媽紅茶', note: '', price: 'M$35 / L$40' },
+          { name: '四季青青茶', note: '', price: 'M$35 / L$40' },
+          { name: '黃金烏龍', note: '', price: 'M$35 / L$40' },
+          { name: '檸檬綠', note: '', price: 'M$50 / L$60' },
+          { name: '梅の涼', note: '', price: 'M$50 / L$60' },
+          { name: '桔子綠', note: '', price: 'M$50 / L$60' },
+          { name: '8冰綠', note: '', price: 'M$50 / L$60' },
+          { name: '養樂多綠', note: '', price: 'M$50 / L$60' },
+          { name: '旺來紅/柚子紅', note: '', price: 'M$50 / L$60' },
         ]
       },
       {
-        title: '🍵 茶飲系列',
+        title: '🧋 找口感',
         items: [
-          { name: '四季春青茶', note: '台灣本土茶葉', price: '$35' },
-          { name: '阿薩姆紅茶', note: '濃郁茶香', price: '$35' },
-          { name: '茉莉綠茶', note: '清新花香', price: '$35' },
-          { name: '烏龍茶', note: '香氣十足', price: '$40' },
+          { name: '四季春＋珍波服', note: '', price: 'M$40 / L$50' },
+          { name: '波霸紅/綠/青/烏', note: '', price: 'M$40 / L$50' },
+          { name: '波霸奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '波菜奶綠', note: '', price: 'M$50 / L$60' },
+          { name: '波菜烏龍奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '珍珠紅/綠/青/烏', note: '', price: 'M$40 / L$50' },
+          { name: '珍珠奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '珍珠奶綠', note: '', price: 'M$50 / L$60' },
+          { name: '椰果奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '布丁奶茶/奶綠', note: '', price: 'M$60 / L$75' },
         ]
       },
       {
-        title: '🥛 奶茶系列',
+        title: '🥛 找奶茶',
         items: [
-          { name: '奶茶', note: '奶香濃郁', price: '$45' },
-          { name: '抹茶拿鐵', note: '日式風味', price: '$55' },
-          { name: '冬瓜拿鐵', note: '台灣傳統風味', price: '$50' },
+          { name: '奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '奶綠', note: '', price: 'M$50 / L$60' },
+          { name: '紅茶瑪奇朵', note: '', price: 'M$50 / L$60' },
+          { name: '烏龍瑪奇朵', note: '', price: 'M$50 / L$60' },
+          { name: '四季奶青', note: '', price: 'M$50 / L$60' },
+          { name: '黃金烏龍奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '阿華田', note: '', price: 'M$55 / L$65' },
         ]
       },
       {
-        title: '🍋 果茶系列',
+        title: '🍋 找新鮮',
         items: [
-          { name: '檸檬綠茶', note: '清爽酸甜', price: '$45' },
-          { name: '百香果綠茶', note: '熱帶風情', price: '$50' },
-          { name: '葡萄柚紅茶', note: '限量供應', price: '$55' },
+          { name: '檸檬汁', note: '', price: 'M$55 / L$65' },
+          { name: '金桔檸檬', note: '', price: 'M$55 / L$65' },
+          { name: '檸檬梅汁', note: '', price: 'M$60 / L$75' },
+          { name: '檸檬養樂多', note: '', price: 'M$65 / L$80' },
+          { name: '8冰茶', note: '', price: 'M$50 / L$60' },
+          { name: '柚子茶', note: '', price: 'M$50 / L$60' },
+          { name: '鮮柚汁', note: '', price: 'M$60 / L$75' },
+          { name: '葡萄柚多多', note: '', price: 'M$65 / L$80' },
+        ]
+      },
+      {
+        title: '☕ 紅茶拿鐵',
+        items: [
+          { name: '紅茶拿鐵', note: '', price: 'M$60 / L$75' },
+          { name: '綠茶拿鐵', note: '', price: 'M$60 / L$75' },
+          { name: '黃金烏龍拿鐵', note: '', price: 'M$60 / L$75' },
+          { name: '阿草田拿鐵', note: '', price: 'M$65 / L$80' },
+        ]
+      },
+      {
+        title: '🍦 找冰淇淋',
+        items: [
+          { name: '冰淇淋紅茶', note: '', price: 'M$50 / L$60' },
+          { name: '芒果青', note: '', price: 'M$50 / L$60' },
         ]
       }
     ]
@@ -212,9 +250,84 @@ const menuData = {
     logo: 'images/logo-milkshop.png',
     categories: [
       {
-        title: '🐄 菜單更新中',
+        title: '🌸 季節限定',
         items: [
-          { name: '敬請期待正式菜單', note: '資料補充中', price: '-' },
+          { name: '荔荔茉莉', note: '', price: 'M$50' },
+          { name: '荔荔蜜桃椰果 ★', note: '夏季暢銷', price: 'M$65' },
+          { name: '荔多鮮奶果昔 ★', note: '夏季暢銷', price: 'M$60' },
+          { name: '蜜桃烏龍', note: '', price: 'M$70' },
+          { name: '蜜桃茉莉', note: '', price: 'M$70' },
+          { name: '夏嶼果茶', note: '', price: 'M$65' },
+          { name: '海鹽芒果綠', note: '', price: 'M$65' },
+          { name: '蔗杯紅柚凍飲', note: '', price: 'M$75' },
+        ]
+      },
+      {
+        title: '🍵 醇萃茶',
+        items: [
+          { name: '娜杯紅茶', note: '', price: 'L$45' },
+          { name: '英倫伯爵紅茶', note: '', price: 'L$40' },
+          { name: '大正醇香紅茶', note: '', price: 'L$40' },
+          { name: '原片初露青茶', note: '', price: 'L$40' },
+          { name: '茉莉原淬綠茶', note: '', price: 'L$40' },
+          { name: '琥珀高峰烏龍', note: '', price: 'L$40' },
+        ]
+      },
+      {
+        title: '🍊 鮮調果茶',
+        items: [
+          { name: '桂香原片青', note: '', price: 'L$50' },
+          { name: '桂香青檸蜂蜜粉粿 ★', note: '', price: 'L$65' },
+          { name: '柳丁綠茶/青茶', note: '', price: 'L$70' },
+          { name: '白甘蔗青茶', note: '', price: 'L$75' },
+          { name: '青檸香茶', note: '', price: 'L$70' },
+          { name: '蜂蜜檸檬晶凍', note: '', price: 'L$60' },
+          { name: '香柚綠茶', note: '', price: 'L$60' },
+          { name: '養樂多綠', note: '', price: 'L$55' },
+          { name: '冬瓜青茶', note: '', price: 'L$55' },
+          { name: '冰萃柳丁/檸檬', note: '', price: 'L$65' },
+        ]
+      },
+      {
+        title: '🥛 醇濃鮮奶茶',
+        items: [
+          { name: '娜杯紅茶拿鐵 ★TOP1', note: '人氣推薦', price: 'M$60 / L$70' },
+          { name: '伯爵紅茶拿鐵', note: '', price: 'M$55 / L$65' },
+          { name: '大正紅茶拿鐵', note: '', price: 'M$55 / L$65' },
+          { name: '琥珀烏龍拿鐵', note: '', price: 'M$55 / L$65' },
+          { name: '茉香綠茶拿鐵', note: '', price: 'M$55 / L$65' },
+          { name: '原片青茶拿鐵', note: '', price: 'M$55 / L$65' },
+          { name: '珍珠紅茶拿鐵（伯爵/大正）', note: '', price: 'M$65 / L$75' },
+          { name: '珍珠娜杯紅茶拿鐵', note: '', price: 'M$70 / L$80' },
+        ]
+      },
+      {
+        title: '🌾 無咖啡因',
+        items: [
+          { name: '桂香輕蕎麥', note: '', price: 'M$55' },
+          { name: '輕纖蕎麥茶', note: '', price: 'M$45' },
+          { name: '輕纖蕎麥拿鐵', note: '', price: 'M$65 / L$75' },
+          { name: '蜂香決明大麥', note: '', price: 'M$35' },
+          { name: '焙香大麥拿鐵', note: '', price: 'M$55 / L$65' },
+          { name: '原鄉冬瓜茶', note: '', price: 'M$40' },
+          { name: '冬瓜檸檬/麥茶', note: '', price: 'M$55' },
+        ]
+      },
+      {
+        title: '🐄 醇濃綠光鮮奶',
+        items: [
+          { name: '芋頭鮮奶', note: '', price: 'M$70 / L$90' },
+          { name: '珍珠鮮奶', note: '', price: 'M$70 / L$90' },
+          { name: '手炒黑糖鮮奶', note: '', price: 'M$65 / L$85' },
+          { name: '嫩仙草凍奶', note: '', price: 'M$65 / L$85' },
+          { name: '綠光純鮮奶家庭號', note: '冷飲限定', price: '$169' },
+        ]
+      },
+      {
+        title: '➕ PLUS 加料',
+        items: [
+          { name: '珍珠 / 仙草凍 / 綠茶凍', note: '', price: '+$10' },
+          { name: '脆嘬破球 / 蜂蜜黑糖粉粿 / 荔荔椰果', note: '', price: '+$15' },
         ]
       }
     ]
@@ -341,13 +454,107 @@ const menuData = {
 
   'kebuke': {
     name: '可不可熟成紅茶',
-    desc: 'KEBUKE Tea Company',
+    desc: 'KEBUKE Tea Company · 2008',
     logo: 'images/logo-kebuke.png',
     categories: [
       {
-        title: '🍵 菜單更新中',
+        title: '⭐ 推薦組合',
         items: [
-          { name: '敬請期待正式菜單', note: '資料補充中', price: '-' },
+          { name: '1號｜熟成紅茶＋白玉', note: '', price: 'M$45 / L$50' },
+          { name: '2號｜春梅冰茶＋春梅凍', note: '僅提供冷飲', price: 'M$65 / L$75' },
+          { name: '3號｜胭脂多多＋水玉', note: '僅提供冷飲', price: 'M$60 / L$70' },
+          { name: '4號｜半熟烏龍厚乳＋白玉', note: '', price: 'M$69 / L$79' },
+        ]
+      },
+      {
+        title: '🍵 乎乾 好茶',
+        items: [
+          { name: '熟成紅茶', note: '', price: 'M$35 / L$40' },
+          { name: '麗春紅茶', note: '', price: 'M$35 / L$40' },
+          { name: '春芽綠茶', note: '', price: 'M$35 / L$40' },
+          { name: '半熟烏龍', note: '', price: 'M$35 / L$40' },
+          { name: '胭脂多多', note: '', price: 'M$45 / L$50' },
+          { name: '茶花烏龍多多', note: '', price: 'M$50 / L$60' },
+          { name: '茶花烏龍梅', note: '', price: 'M$50 / L$60' },
+          { name: '蘋果麗春', note: '', price: 'M$59 / L$69' },
+          { name: '蘋果春芽', note: '', price: 'M$59 / L$69' },
+          { name: '蘋果茶花烏龍', note: '', price: 'M$65 / L$75' },
+        ]
+      },
+      {
+        title: '✨ 乎乾 手作',
+        items: [
+          { name: '熟橙紅茶', note: '', price: 'M$45 / L$55' },
+          { name: '春檸綠茶', note: '', price: 'M$45 / L$55' },
+          { name: '春梅冰茶', note: '', price: 'M$50 / L$60' },
+          { name: '太妃熟成', note: '特調配方 / Extra Shot +10', price: 'M$50 / L$55' },
+          { name: '金蜜熟成', note: '100% 現搖', price: 'M$53 / L$63' },
+        ]
+      },
+      {
+        title: '🌙 乎乾 好眠（無咖啡因）',
+        items: [
+          { name: '輕纖穀奈茶', note: '', price: 'M$40 / L$50' },
+          { name: '穀奈冷露', note: '', price: 'M$45 / L$55' },
+          { name: '穀奈歐蕾', note: '', price: 'M$59 / L$69' },
+          { name: '金蜜檸檬', note: '100% 現搖', price: 'M$53 / L$63' },
+        ]
+      },
+      {
+        title: '🥛 乎乾 鮮奶茶',
+        items: [
+          { name: '熟成歐蕾', note: '', price: 'M$55 / L$65' },
+          { name: '冷露歐蕾', note: '', price: 'M$55 / L$65' },
+          { name: '胭脂歐蕾', note: '', price: 'M$59 / L$69' },
+          { name: '半熟烏龍歐蕾', note: '', price: 'M$59 / L$69' },
+          { name: '金蜜歐蕾', note: '100% 現搖', price: 'M$60 / L$70' },
+          { name: '白玉歐蕾', note: '', price: 'M$60 / L$70' },
+          { name: '鷺鷥歐蕾', note: '', price: 'M$60 / L$70' },
+          { name: '熟成榛果歐蕾', note: '', price: 'M$60 / L$70' },
+          { name: '墨玉鷺鷥歐蕾', note: '', price: 'M$70 / L$80' },
+        ]
+      },
+      {
+        title: '🧋 乎乾 奶茶',
+        items: [
+          { name: '熟成奶茶', note: '', price: 'M$40 / L$55' },
+          { name: '春芽奶茶', note: '', price: 'M$45 / L$55' },
+          { name: '胭脂奶茶', note: '', price: 'M$50 / L$60' },
+          { name: '白玉奶茶', note: '', price: 'M$50 / L$60' },
+        ]
+      },
+      {
+        title: '🍼 乎乾 厚乳',
+        items: [
+          { name: '半熟烏龍厚乳', note: '', price: 'M$59 / L$69' },
+          { name: '茶花烏龍厚乳', note: '', price: 'M$59 / L$69' },
+          { name: '生茶烏龍厚乳', note: '', price: 'M$69 / L$79' },
+          { name: '蘋果春芽厚乳', note: '', price: 'M$69' },
+        ]
+      },
+      {
+        title: '❄️ 乎乾 冬瓜',
+        items: [
+          { name: '雪花冷露', note: '', price: 'M$35 / L$40' },
+          { name: '熟成冷露', note: '', price: 'M$40 / L$45' },
+          { name: '春芽冷露', note: '', price: 'M$40 / L$45' },
+          { name: '半熟烏龍冷露', note: '', price: 'M$40 / L$45' },
+          { name: '胭脂冷露', note: '', price: 'M$45 / L$50' },
+          { name: '檸檬冷露', note: '', price: 'M$50 / L$60' },
+        ]
+      },
+      {
+        title: '🍦 乎乾 冰淇淋',
+        items: [
+          { name: '雪藏紅茶', note: '', price: 'L$60' },
+          { name: '雪藏奶茶', note: '', price: 'L$69' },
+        ]
+      },
+      {
+        title: '➕ 加料',
+        items: [
+          { name: '白玉 / 水玉', note: '', price: '+$10' },
+          { name: '墨玉 / 春梅凍 / 榛果蕎麥凍', note: '溫、熱飲不適用', price: '+$15' },
         ]
       }
     ]
@@ -355,13 +562,93 @@ const menuData = {
 
   'guiji': {
     name: '龜記 GUIJI',
-    desc: '龜記茶飲',
+    desc: 'Dream Big, Live Fresh.',
     logo: 'images/logo-guiji.png',
     categories: [
       {
-        title: '🐢 菜單更新中',
+        title: '🍵 醇萃 Tea',
         items: [
-          { name: '敬請期待正式菜單', note: '資料補充中', price: '-' },
+          { name: '極品紅茶', note: '', price: '$40' },
+          { name: '翡翠綠茶', note: '', price: '$40' },
+          { name: '青四季春', note: '', price: '$40' },
+          { name: '三韻紅萱', note: '', price: '$45' },
+          { name: '三十三茶王', note: '龜記推薦', price: '$45' },
+          { name: '碎銀普洱茶', note: '', price: '$45' },
+          { name: '花沫烏龍', note: '', price: '$45' },
+        ]
+      },
+      {
+        title: '🏮 鄉韻 Taiwan Memory',
+        items: [
+          { name: '豆漿紅茶', note: '', price: '$45' },
+          { name: '冬瓜茶王', note: '', price: '$55' },
+          { name: '阿源楊桃紅茶', note: '', price: '$55' },
+          { name: '阿源楊桃綠茶', note: '', price: '$55' },
+          { name: '冬瓜雷夢', note: '龜記推薦・無添加茶', price: '$60' },
+          { name: '楊桃雷夢', note: '', price: '$60' },
+          { name: '甘蔗四季春', note: '最低一分糖', price: '$65' },
+        ]
+      },
+      {
+        title: '🍯 蜜蜂工坊 BeeTouched',
+        items: [
+          { name: '蜂蜜綠茶', note: '糖度固定', price: '$55' },
+          { name: '蜂蜜四季春', note: '糖度固定', price: '$55' },
+          { name: '蜂蜜花沫烏龍', note: '糖度固定', price: '$60' },
+          { name: '蜂蜜雷夢', note: '無添加茶', price: '$65' },
+          { name: '雷夢蔗蔗蜜', note: '', price: '$75' },
+        ]
+      },
+      {
+        title: '🍋 果茶 Fruit Tea',
+        items: [
+          { name: '百香紅茶', note: '最低一分糖', price: '$55' },
+          { name: '百香綠茶', note: '最低一分糖', price: '$55' },
+          { name: '翡翠雷夢', note: '', price: '$60' },
+          { name: '柳丁翡翠', note: '', price: '$60' },
+          { name: '蘋果紅萱', note: '龜記推薦・最低一分糖', price: '$60' },
+          { name: '蜜桃烏龍', note: '', price: '$70' },
+          { name: '紅柚翡翠', note: '', price: '$75' },
+        ]
+      },
+      {
+        title: '🍇 紫葡萄系列',
+        items: [
+          { name: '紫葡三韻紅', note: '最低一分糖', price: '$60' },
+          { name: '紫葡蔗蔗春', note: '龜記推薦・最低一分糖', price: '$75' },
+          { name: '紅柚紫葡凍飲', note: '最低一分糖', price: '$80' },
+        ]
+      },
+      {
+        title: '🧋 奶茶 Milk Tea',
+        items: [
+          { name: '極品奶茶', note: '', price: '$55' },
+          { name: '翡翠奶茶', note: '', price: '$55' },
+          { name: '茶王奶茶', note: '龜記推薦', price: '$60' },
+          { name: '碎銀普洱奶茶', note: '', price: '$60' },
+          { name: '珍珠奶茶', note: '', price: '$65' },
+          { name: '蜂蜜奶茶', note: '糖度固定', price: '$65' },
+        ]
+      },
+      {
+        title: '🐄 小農鮮乳坊 Fresh Milk',
+        items: [
+          { name: '極品鮮乳茶', note: '', price: '$70' },
+          { name: '翡翠鮮乳茶', note: '', price: '$70' },
+          { name: '龜記濃乳茶', note: '龜記推薦', price: '$70' },
+          { name: '冬瓜鮮乳', note: '無添加茶', price: '$70' },
+          { name: '茶王鮮乳茶', note: '', price: '$75' },
+          { name: '巧克鮮乳茶', note: '最低一分糖', price: '$75' },
+          { name: '碎銀普洱鮮乳', note: '', price: '$75' },
+        ]
+      },
+      {
+        title: '➕ 加料（全素可食）',
+        items: [
+          { name: '珍珠', note: '', price: '+$10' },
+          { name: '椰果', note: '', price: '+$10' },
+          { name: '蘆薈', note: '', price: '+$15' },
+          { name: '紅萱茶凍', note: '僅限冷飲', price: '+$15' },
         ]
       }
     ]
