@@ -1,7 +1,18 @@
 /* ══════════════════════════════════════════════
+   FIREBASE
+══════════════════════════════════════════════ */
+firebase.initializeApp({
+  apiKey: "AIzaSyBuJivEh06ahae7vicgJLEpWZNaIcBr0JI",
+  authDomain: "drinks-order-43f90.firebaseapp.com",
+  projectId: "drinks-order-43f90",
+  storageBucket: "drinks-order-43f90.firebasestorage.app",
+  messagingSenderId: "748518969039",
+  appId: "1:748518969039:web:246244b406cdcc7048f1ba"
+});
+const db = firebase.firestore();
+
+/* ══════════════════════════════════════════════
    MENU DATA
-   Firebase-ready structure:
-   toppings[], sweetness[], ice[] per shop
 ══════════════════════════════════════════════ */
 const menuData = {
 
@@ -713,11 +724,32 @@ function showSessionBanner() {
     `👥 ${session.name}・密碼：${session.code}`;
 }
 
-function saveSession(name, code) {
+function persistSession(name, code) {
   session.code = code; session.name = name;
   localStorage.setItem('drinks_session', JSON.stringify(session));
   showSessionBanner();
   document.getElementById('sessionOverlay').classList.add('hidden');
+}
+
+async function createSession(name, code) {
+  const ref = db.collection('sessions').doc(code);
+  const doc = await ref.get();
+  if (doc.exists) {
+    alert('此密碼已被使用，請換一組數字');
+    return;
+  }
+  await ref.set({ createdBy: name, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  persistSession(name, code);
+}
+
+async function joinSession(name, code) {
+  const ref = db.collection('sessions').doc(code);
+  const doc = await ref.get();
+  if (!doc.exists) {
+    document.getElementById('joinHint').textContent = '找不到此密碼的訂單，請確認是否正確';
+    return;
+  }
+  persistSession(name, code);
 }
 
 /* ══════════════════════════════════════════════
@@ -1134,24 +1166,32 @@ document.getElementById('cartPill').addEventListener('click', () => {
   if (state.cart.length > 0) showSummary();
 });
 
-document.getElementById('summaryConfirm').addEventListener('click', () => {
-  // Save order to localStorage (Firebase will replace this)
-  if (session.code && session.name) {
-    const key = 'drinks_orders_' + session.code;
-    const orders = JSON.parse(localStorage.getItem(key) || '{}');
-    orders[session.name] = orders[session.name] || [];
-    orders[session.name].push({
-      shopId: state.shopId,
-      items: state.cart,
-      total: state.cart.reduce((s,i) => s + (i.unitPrice||0)*i.qty, 0),
-      time: new Date().toISOString(),
-    });
-    localStorage.setItem(key, JSON.stringify(orders));
+document.getElementById('summaryConfirm').addEventListener('click', async () => {
+  const btn = document.getElementById('summaryConfirm');
+  btn.disabled = true; btn.textContent = '送出中…';
+  try {
+    if (session.code && session.name) {
+      const cleanItems = state.cart.map(it => ({
+        name: it.name, size: it.size, sweetness: it.sweetness,
+        ice: it.ice, toppings: it.toppings, notes: it.notes || '',
+        unitPrice: it.unitPrice || 0, qty: it.qty,
+      }));
+      await db.collection('sessions').doc(session.code).collection('orders').add({
+        memberName: session.name,
+        shopId: state.shopId,
+        items: cleanItems,
+        total: state.cart.reduce((s,i) => s + (i.unitPrice||0)*i.qty, 0),
+        time: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+    alert('✅ 訂單已送出！');
+    document.getElementById('summaryOverlay').classList.remove('open');
+    closeModal();
+    state.cart = [];
+  } catch (e) {
+    alert('送出失敗，請檢查網路後再試');
   }
-  alert('✅ 訂單已送出！');
-  document.getElementById('summaryOverlay').classList.remove('open');
-  closeModal();
-  state.cart = [];
+  btn.disabled = false; btn.textContent = '確認送出訂單';
 });
 
 document.getElementById('summaryBack').addEventListener('click', () => {
@@ -1173,20 +1213,28 @@ document.getElementById('stabJoin').addEventListener('click', () => {
   document.getElementById('createPanel').classList.remove('active');
 });
 
-document.getElementById('createBtn').addEventListener('click', () => {
+document.getElementById('createBtn').addEventListener('click', async () => {
   const name = document.getElementById('createName').value.trim();
   const code = document.getElementById('createCode').value.trim();
   if (!name) { alert('請輸入你的名字'); return; }
   if (!code || !/^\d+$/.test(code)) { alert('密碼請輸入純數字'); return; }
-  saveSession(name, code);
+  const btn = document.getElementById('createBtn');
+  btn.disabled = true; btn.textContent = '建立中…';
+  try { await createSession(name, code); }
+  catch (e) { alert('連線失敗，請稍後再試'); }
+  btn.disabled = false; btn.textContent = '建立新訂單 →';
 });
 
-document.getElementById('joinBtn').addEventListener('click', () => {
+document.getElementById('joinBtn').addEventListener('click', async () => {
   const name = document.getElementById('joinName').value.trim();
   const code = document.getElementById('joinCode').value.trim();
   if (!name) { alert('請輸入你的名字'); return; }
   if (!code || !/^\d+$/.test(code)) { alert('密碼請輸入純數字'); return; }
-  saveSession(name, code);
+  const btn = document.getElementById('joinBtn');
+  btn.disabled = true; btn.textContent = '加入中…';
+  try { await joinSession(name, code); }
+  catch (e) { alert('連線失敗，請稍後再試'); }
+  btn.disabled = false; btn.textContent = '加入訂單 →';
 });
 
 // Order manager
@@ -1194,42 +1242,59 @@ document.getElementById('orderMgrBtn').addEventListener('click', () => {
   showOrderManager();
 });
 
-document.getElementById('orderMgrClose').addEventListener('click', () => {
-  document.getElementById('orderMgrOverlay').classList.remove('open');
-});
+let orderUnsub = null;
 
 function showOrderManager() {
-  const content = document.getElementById('orderMgrContent');
   if (!session.code) { alert('請先建立或加入訂單'); return; }
-  const key = 'drinks_orders_' + session.code;
-  const allOrders = JSON.parse(localStorage.getItem(key) || '{}');
-  let grandTotal = 0;
-
-  if (Object.keys(allOrders).length === 0) {
-    content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">目前還沒有人送出訂單</p>';
-  } else {
-    content.innerHTML = Object.entries(allOrders).map(([member, orders]) => {
-      return orders.map(order => {
-        grandTotal += order.total || 0;
-        return `<div class="order-member-group">
-          <div class="order-member-name">${member}（$${order.total || 0}）</div>
-          ${order.items.map(it => `
-            <div class="order-item-mini">
-              <div>
-                <div>${it.name} × ${it.qty}</div>
-                <div class="order-item-detail">${it.size}｜${it.sweetness}｜${it.ice}${it.toppings.length ? '｜' + it.toppings.map(t=>t.name).join('、') : ''}</div>
-                ${it.notes ? '<div class="order-item-detail">備註：' + it.notes + '</div>' : ''}
-              </div>
-              <span style="font-weight:600;color:var(--brown)">$${(it.unitPrice||0)*it.qty}</span>
-            </div>`).join('')}
-        </div>`;
-      }).join('');
-    }).join('');
-  }
-
-  document.getElementById('orderMgrTotal').textContent = `$${grandTotal}`;
+  const content = document.getElementById('orderMgrContent');
+  content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">載入中…</p>';
   document.getElementById('orderMgrOverlay').classList.add('open');
+
+  if (orderUnsub) orderUnsub();
+  orderUnsub = db.collection('sessions').doc(session.code)
+    .collection('orders').orderBy('time','asc')
+    .onSnapshot(snap => {
+      if (snap.empty) {
+        content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">目前還沒有人送出訂單</p>';
+        document.getElementById('orderMgrTotal').textContent = '$0';
+        return;
+      }
+      let grandTotal = 0;
+      const grouped = {};
+      snap.docs.forEach(doc => {
+        const d = doc.data();
+        if (!grouped[d.memberName]) grouped[d.memberName] = [];
+        grouped[d.memberName].push(d);
+        grandTotal += d.total || 0;
+      });
+
+      content.innerHTML = Object.entries(grouped).map(([member, orders]) => {
+        const memberTotal = orders.reduce((s,o) => s + (o.total||0), 0);
+        return orders.map(order => `
+          <div class="order-member-group">
+            <div class="order-member-name">${member}（$${order.total || 0}）</div>
+            ${(order.items||[]).map(it => `
+              <div class="order-item-mini">
+                <div>
+                  <div>${it.name} × ${it.qty}</div>
+                  <div class="order-item-detail">${it.size}｜${it.sweetness}｜${it.ice}${it.toppings && it.toppings.length ? '｜' + it.toppings.map(t=>t.name).join('、') : ''}</div>
+                  ${it.notes ? '<div class="order-item-detail">備註：' + it.notes + '</div>' : ''}
+                </div>
+                <span style="font-weight:600;color:var(--brown)">$${(it.unitPrice||0)*it.qty}</span>
+              </div>`).join('')}
+          </div>`).join('');
+      }).join('');
+
+      document.getElementById('orderMgrTotal').textContent = `$${grandTotal}`;
+    }, err => {
+      content.innerHTML = '<p style="text-align:center;color:#c0392b;padding:20px">載入失敗，請確認網路連線</p>';
+    });
 }
+
+document.getElementById('orderMgrClose').addEventListener('click', () => {
+  document.getElementById('orderMgrOverlay').classList.remove('open');
+  if (orderUnsub) { orderUnsub(); orderUnsub = null; }
+});
 
 document.getElementById('sessionChangeBtn').addEventListener('click', () => {
   localStorage.removeItem('drinks_session');
