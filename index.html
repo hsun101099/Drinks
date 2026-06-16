@@ -3,10 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>飲料地圖</title>
+  <title>點飲料吧！</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- ── Session Setup Overlay ── -->
+  <div class="session-overlay" id="sessionOverlay">
+    <div class="session-box">
+      <div class="session-icon">🧋</div>
+      <h1 class="session-app-name">點飲料吧！</h1>
+      <p class="session-app-sub">先建立或加入一個飲料團<br>不同的團用不同暗號互不干擾</p>
+
+      <div class="stabs">
+        <button class="stab active" id="stabCreate">建立新團購</button>
+        <button class="stab" id="stabJoin">加入團購</button>
+      </div>
+
+      <div class="spanel active" id="createPanel">
+        <label class="field-label">你的名字</label>
+        <input class="field-input" id="createName" placeholder="例：阿明、小花…" maxlength="12" />
+        <label class="field-label">設定暗號（可自訂）</label>
+        <div class="code-row">
+          <input class="field-input" id="createCode" placeholder="例：奶茶愛好者" maxlength="20" />
+          <button class="gen-btn" id="genCodeBtn">隨機</button>
+        </div>
+        <button class="session-submit-btn" id="createBtn">建立團購 →</button>
+      </div>
+
+      <div class="spanel" id="joinPanel">
+        <label class="field-label">你的名字</label>
+        <input class="field-input" id="joinName" placeholder="例：阿明、小花…" maxlength="12" />
+        <label class="field-label">輸入朋友的暗號</label>
+        <input class="field-input" id="joinCode" placeholder="請輸入暗號" maxlength="20" />
+        <p class="join-hint" id="joinHint"></p>
+        <button class="session-submit-btn" id="joinBtn">加入團購 →</button>
+      </div>
+    </div>
+  </div>
 
   <nav class="navbar">
     <button class="nav-menu-btn">
@@ -31,29 +68,26 @@
     </div>
   </nav>
 
+  <!-- Session Banner -->
+  <div class="session-banner" id="sessionBanner" style="display:none">
+    <span id="sessionBannerText"></span>
+    <button class="session-change-btn" id="sessionChangeBtn">換團</button>
+  </div>
+
   <section class="hero">
     <div class="hero-content">
       <div class="hero-text">
-        <p class="hero-sub">探索你的</p>
-        <h1 class="hero-title">特調新滋味</h1>
-        <p class="hero-desc">精選台灣人氣飲料品牌，一站滿足你的味蕾</p>
+        <p class="hero-sub">歡迎來到</p>
+        <h1 class="hero-title">點飲料吧！</h1>
+        <p class="hero-desc">精選台灣人氣品牌，團購最方便</p>
       </div>
       <div class="hero-illustration">
-        <div class="bubble bubble-1"></div>
-        <div class="bubble bubble-2"></div>
-        <div class="bubble bubble-3"></div>
-        <div class="hero-cup">
-          <svg viewBox="0 0 120 160" width="120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="30" width="80" height="110" rx="12" fill="#f5e6c8" stroke="#c9a96e" stroke-width="2"/>
-            <rect x="20" y="30" width="80" height="25" rx="12" fill="#c9a96e" opacity="0.5"/>
-            <ellipse cx="60" cy="30" rx="40" ry="8" fill="#c9a96e" opacity="0.7"/>
-            <rect x="50" y="10" width="20" height="22" rx="4" fill="#e8d5b0" stroke="#c9a96e" stroke-width="1.5"/>
-            <circle cx="40" cy="90" r="6" fill="#8db4a0" opacity="0.6"/>
-            <circle cx="60" cy="100" r="7" fill="#8db4a0" opacity="0.6"/>
-            <circle cx="80" cy="88" r="5" fill="#8db4a0" opacity="0.6"/>
-            <circle cx="50" cy="108" r="5" fill="#8db4a0" opacity="0.6"/>
-            <circle cx="72" cy="110" r="6" fill="#8db4a0" opacity="0.6"/>
-          </svg>
+        <img src="images/hero-illustration.jpg" alt="" class="hero-img"
+          onerror="this.style.display='none';document.querySelector('.hero-img-fallback').style.display='flex'">
+        <div class="hero-img-fallback">
+          <span style="font-size:3rem">🧋</span>
+          <span style="font-size:2rem;margin-top:8px">🍵</span>
+          <span style="font-size:1.6rem;margin-top:4px">🍓</span>
         </div>
       </div>
     </div>
@@ -80,7 +114,7 @@
         <h3 class="card-name">青山</h3>
       </div>
       <div class="shop-card" data-shop="milkshop">
-        <div class="card-logo"><img src="images/logo-milkshop.png" alt="Milkshop迷客夏" /></div>
+        <div class="card-logo"><img src="images/logo-milkshop.png" alt="迷客夏" /></div>
         <h3 class="card-name">迷客夏</h3>
       </div>
       <div class="shop-card" data-shop="macu">
@@ -111,10 +145,8 @@
   <div class="modal-overlay" id="menuModal">
     <div class="modal">
 
-      <!-- Drag Handle -->
       <div class="modal-handle"></div>
 
-      <!-- Header -->
       <div class="modal-header">
         <div class="modal-shop-row">
           <div class="modal-logo-wrap">
@@ -128,7 +160,6 @@
         <button class="modal-close" id="modalClose">✕</button>
       </div>
 
-      <!-- Step Indicator -->
       <div class="steps-bar">
         <div class="step-item" id="si1">
           <div class="step-num">1</div>
@@ -146,14 +177,12 @@
         </div>
       </div>
 
-      <!-- Panel Container -->
       <div class="panel-container">
         <div class="step-panel" id="panel1"></div>
         <div class="step-panel" id="panel2"></div>
         <div class="step-panel" id="panel3"></div>
       </div>
 
-      <!-- Footer -->
       <div class="modal-footer">
         <button class="foot-btn back-btn" id="btnBack">← 返回</button>
         <div class="cart-pill" id="cartPill">
@@ -169,6 +198,7 @@
   <div class="summary-overlay" id="summaryOverlay">
     <div class="summary-box">
       <h2 class="summary-title">🧾 訂單明細</h2>
+      <div class="summary-member-row" id="summaryMemberRow"></div>
       <div class="summary-items" id="summaryItems"></div>
       <div class="summary-total-row">
         <span>合計</span>

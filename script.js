@@ -7,6 +7,7 @@ const menuData = {
 
   '50lan': {
     name: '50嵐', desc: '好茶陪伴你的日常', logo: 'images/logo-50lan.png',
+    menuImg: 'images/menu-50lan.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -72,6 +73,7 @@ const menuData = {
 
   'coco': {
     name: 'CoCo 都可', desc: '多元口味飲料品牌', logo: 'images/logo-coco.png',
+    menuImg: 'images/menu-coco.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -127,6 +129,7 @@ const menuData = {
 
   'qingshan': {
     name: '青山', desc: '青茶專業製作', logo: 'images/logo-qingshan.png',
+    menuImg: 'images/menu-qingshan.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -199,6 +202,7 @@ const menuData = {
 
   'milkshop': {
     name: 'Milkshop 迷客夏', desc: '新鮮牧場直送，純粹鮮乳風味', logo: 'images/logo-milkshop.png',
+    menuImg: 'images/menu-milkshop.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -268,6 +272,7 @@ const menuData = {
 
   'macu': {
     name: 'MACU', desc: '果粒茶創始品牌', logo: 'images/logo-macu.png',
+    menuImg: 'images/menu-macu.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -356,6 +361,7 @@ const menuData = {
 
   'kebuke': {
     name: '可不可熟成紅茶', desc: 'KEBUKE Tea Company · 2008', logo: 'images/logo-kebuke.png',
+    menuImg: 'images/menu-kebuke.jpg',
     sweetness: ['無糖','一分糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -435,6 +441,7 @@ const menuData = {
 
   'guiji': {
     name: '龜記 GUIJI', desc: 'Dream Big, Live Fresh.', logo: 'images/logo-guiji.png',
+    menuImg: 'images/menu-guiji.jpg',
     sweetness: ['去糖(0%)','一分(10%)','三分(30%)','五分(50%)','八分(80%)','正常(100%)'],
     ice: ['去冰(0%)','微冰(30%)','少冰(80%)','正常冰(100%)'],
     toppings: [
@@ -503,6 +510,7 @@ const menuData = {
 
   'qingfuquan': {
     name: '清心福全', desc: '台灣茶飲連鎖品牌', logo: 'images/logo-qingfuquan.png',
+    menuImg: 'images/menu-qingfuquan.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -588,6 +596,7 @@ const menuData = {
 
   'comebuy': {
     name: 'COMEBUY', desc: '甘蔗青茶專賣', logo: 'images/logo-comebuy.png',
+    menuImg: 'images/menu-comebuy.jpg',
     sweetness: ['無糖','微糖','半糖','少糖','正常'],
     ice: ['去冰','微冰','少冰','正常冰','溫','熱'],
     toppings: [
@@ -658,24 +667,85 @@ const menuData = {
 };
 
 /* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
+function getAvailableSizes(priceStr) {
+  const hasM = /M\$/.test(priceStr);
+  const hasL = /L\$/.test(priceStr);
+  if (!hasM && !hasL) return { M: false, L: true }; // single/fixed price → L only
+  return { M: hasM, L: hasL };
+}
+
+function parsePrice(priceStr, size) {
+  if (size === 'M') { const m = priceStr.match(/M\$(\d+)/); if (m) return parseInt(m[1]); }
+  if (size === 'L') { const l = priceStr.match(/L\$(\d+)/); if (l) return parseInt(l[1]); }
+  const any = priceStr.match(/\$(\d+)/);
+  return any ? parseInt(any[1]) : 0;
+}
+
+/* ══════════════════════════════════════════════
+   SESSION
+══════════════════════════════════════════════ */
+const session = { code: null, name: null };
+
+const FUN_WORDS = ['奶茶','珍珠','波霸','冬瓜','椰果','布丁','烏龍','茉莉','芒果','草莓','抹茶','荔枝'];
+
+function generateCode() {
+  const w1 = FUN_WORDS[Math.floor(Math.random() * FUN_WORDS.length)];
+  const w2 = FUN_WORDS[Math.floor(Math.random() * FUN_WORDS.length)];
+  return w1 + w2 + Math.floor(Math.random() * 90 + 10);
+}
+
+function initSession() {
+  const saved = localStorage.getItem('drinks_session');
+  if (saved) {
+    try {
+      const s = JSON.parse(saved);
+      session.code = s.code; session.name = s.name;
+      showSessionBanner();
+      document.getElementById('sessionOverlay').classList.add('hidden');
+    } catch { showSessionSetup(); }
+  } else {
+    showSessionSetup();
+  }
+}
+
+function showSessionSetup() {
+  const overlay = document.getElementById('sessionOverlay');
+  overlay.classList.remove('hidden');
+  document.getElementById('createCode').value = generateCode();
+}
+
+function showSessionBanner() {
+  const banner = document.getElementById('sessionBanner');
+  banner.style.display = 'flex';
+  document.getElementById('sessionBannerText').textContent =
+    `👥 ${session.name} 的飲料團・暗號：${session.code}`;
+}
+
+function saveSession(name, code) {
+  session.code = code; session.name = name;
+  localStorage.setItem('drinks_session', JSON.stringify(session));
+  showSessionBanner();
+  document.getElementById('sessionOverlay').classList.add('hidden');
+}
+
+/* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
 const state = {
   shopId: null,
   step: 1,
-  activeCatIdx: 0,
-  cart: [],          // { name, size, sweetness, ice, toppings[], notes, price, qty }
-  pendingItem: null, // item being customized in step 3
+  cart: [],
+  pendingItem: null,
 };
 
 /* ══════════════════════════════════════════════
    STEP NAVIGATION
 ══════════════════════════════════════════════ */
 function goToStep(n) {
-  const prev = state.step;
   state.step = n;
 
-  // Panels
   ['panel1','panel2','panel3'].forEach((id, i) => {
     const el = document.getElementById(id);
     el.classList.remove('active','prev');
@@ -683,7 +753,6 @@ function goToStep(n) {
     else if (i + 1 < n) el.classList.add('prev');
   });
 
-  // Step indicators
   [1,2,3].forEach(i => {
     const si = document.getElementById('si' + i);
     si.classList.remove('active','done');
@@ -691,11 +760,9 @@ function goToStep(n) {
     else if (i < n) si.classList.add('done');
   });
 
-  // Progress fills
   document.getElementById('fill1').style.width = n >= 2 ? '100%' : '0%';
   document.getElementById('fill2').style.width = n >= 3 ? '100%' : '0%';
 
-  // Footer
   const btnBack = document.getElementById('btnBack');
   const btnNext = document.getElementById('btnNext');
   const cartPill = document.getElementById('cartPill');
@@ -709,7 +776,6 @@ function goToStep(n) {
   } else if (n === 2) {
     btnNext.style.display = 'none';
     updateCartPill();
-    cartPill.classList.add('visible');
   } else if (n === 3) {
     btnNext.style.display = 'none';
     cartPill.classList.remove('visible');
@@ -722,7 +788,19 @@ function goToStep(n) {
 function renderStep1(shopId) {
   const data = menuData[shopId];
   const panel = document.getElementById('panel1');
+
+  const imgSection = data.menuImg ? `
+    <details class="menu-img-details">
+      <summary class="menu-img-summary">
+        📷 查看完整菜單圖片
+        <span class="menu-img-toggle-arrow">▼</span>
+      </summary>
+      <img src="${data.menuImg}" alt="${data.name}菜單" class="menu-img-full" loading="lazy"
+        onerror="this.parentElement.style.display='none'">
+    </details>` : '';
+
   panel.innerHTML = `
+    ${imgSection}
     <div class="menu-board">
       ${data.categories.map(cat => `
         <div class="board-section">
@@ -751,9 +829,7 @@ function renderStep2(shopId) {
   panel.innerHTML = `
     <div class="cat-chips-wrap" id="catChips">
       ${data.categories.map((cat, i) => `
-        <button class="cat-chip ${i === 0 ? 'active' : ''}" data-idx="${i}">
-          ${cat.title}
-        </button>`).join('')}
+        <button class="cat-chip ${i === 0 ? 'active' : ''}" data-idx="${i}">${cat.title}</button>`).join('')}
     </div>
     <div class="items-list" id="itemsList"></div>`;
 
@@ -785,11 +861,7 @@ function renderCategoryItems(shopId, catIdx) {
 
   list.querySelectorAll('.add-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      state.pendingItem = {
-        name: btn.dataset.name,
-        note: btn.dataset.note,
-        price: btn.dataset.price,
-      };
+      state.pendingItem = { name: btn.dataset.name, note: btn.dataset.note, price: btn.dataset.price };
       renderStep3(shopId);
       goToStep(3);
     });
@@ -803,7 +875,8 @@ function renderStep3(shopId) {
   const data = menuData[shopId];
   const item = state.pendingItem;
   const panel = document.getElementById('panel3');
-
+  const sizes = getAvailableSizes(item.price);
+  const defaultSize = sizes.L ? 'L' : 'M';
   const hasToppings = data.toppings && data.toppings.length > 0;
 
   panel.innerHTML = `
@@ -817,22 +890,14 @@ function renderStep3(shopId) {
         <div class="customize-item-price">${item.price}</div>
       </div>
 
-      <!-- Size -->
       <div class="customize-section">
         <label class="customize-label">🥤 杯型</label>
         <div class="size-toggle">
-          <button class="size-btn" data-size="M">
-            M 中杯
-            <div class="size-sub">標準</div>
-          </button>
-          <button class="size-btn selected" data-size="L">
-            L 大杯
-            <div class="size-sub">加大</div>
-          </button>
+          <button class="size-btn${!sizes.M ? ' disabled' : ''}${defaultSize === 'M' ? ' selected' : ''}" data-size="M"${!sizes.M ? ' disabled' : ''}>中杯</button>
+          <button class="size-btn${!sizes.L ? ' disabled' : ''}${defaultSize === 'L' ? ' selected' : ''}" data-size="L"${!sizes.L ? ' disabled' : ''}>大杯</button>
         </div>
       </div>
 
-      <!-- Sweetness -->
       <div class="customize-section">
         <label class="customize-label">🍬 甜度</label>
         <div class="option-pills" id="sweetnessPills">
@@ -842,7 +907,6 @@ function renderStep3(shopId) {
         </div>
       </div>
 
-      <!-- Ice -->
       <div class="customize-section">
         <label class="customize-label">🧊 冰量</label>
         <div class="option-pills" id="icePills">
@@ -853,7 +917,6 @@ function renderStep3(shopId) {
       </div>
 
       ${hasToppings ? `
-      <!-- Toppings -->
       <div class="customize-section">
         <label class="customize-label">➕ 加料</label>
         <div class="toppings-grid" id="toppingsGrid">
@@ -869,13 +932,11 @@ function renderStep3(shopId) {
         </div>
       </div>` : ''}
 
-      <!-- Notes -->
       <div class="customize-section">
         <label class="customize-label">📝 備註</label>
-        <textarea class="notes-input" id="notesInput" placeholder="例：不加冰塊、少甜一點..."></textarea>
+        <textarea class="notes-input" id="notesInput" placeholder="例：不加冰塊、少甜一點…"></textarea>
       </div>
 
-      <!-- Quantity -->
       <div class="customize-section">
         <label class="customize-label">🔢 數量</label>
         <div class="qty-stepper">
@@ -886,13 +947,11 @@ function renderStep3(shopId) {
       </div>
 
       <button class="add-to-cart-btn" id="addToCartBtn">加入訂單</button>
-
     </div>`;
 
-  // Init custom state
   state.pendingItem = {
     ...item,
-    size: 'L',
+    size: defaultSize,
     sweetness: data.sweetness[data.sweetness.length - 1],
     ice: data.ice[3] || data.ice[0],
     toppings: [],
@@ -900,8 +959,7 @@ function renderStep3(shopId) {
     qty: 1,
   };
 
-  // Size
-  panel.querySelectorAll('.size-btn').forEach(btn => {
+  panel.querySelectorAll('.size-btn:not(.disabled)').forEach(btn => {
     btn.addEventListener('click', () => {
       panel.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
@@ -909,7 +967,6 @@ function renderStep3(shopId) {
     });
   });
 
-  // Sweetness
   panel.querySelectorAll('#sweetnessPills .option-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       panel.querySelectorAll('#sweetnessPills .option-pill').forEach(p => p.classList.remove('selected'));
@@ -918,7 +975,6 @@ function renderStep3(shopId) {
     });
   });
 
-  // Ice
   panel.querySelectorAll('#icePills .option-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       panel.querySelectorAll('#icePills .option-pill').forEach(p => p.classList.remove('selected'));
@@ -927,7 +983,6 @@ function renderStep3(shopId) {
     });
   });
 
-  // Toppings
   if (hasToppings) {
     panel.querySelectorAll('.topping-row').forEach(row => {
       row.addEventListener('click', () => {
@@ -946,7 +1001,6 @@ function renderStep3(shopId) {
     });
   }
 
-  // Quantity
   let qty = 1;
   panel.querySelector('#qtyMinus').addEventListener('click', () => {
     if (qty > 1) { qty--; panel.querySelector('#qtyNum').textContent = qty; state.pendingItem.qty = qty; }
@@ -955,24 +1009,21 @@ function renderStep3(shopId) {
     qty++; panel.querySelector('#qtyNum').textContent = qty; state.pendingItem.qty = qty;
   });
 
-  // Notes
   panel.querySelector('#notesInput').addEventListener('input', e => {
     state.pendingItem.notes = e.target.value;
   });
 
-  // Add to cart
   panel.querySelector('#addToCartBtn').addEventListener('click', () => {
+    const base = parsePrice(state.pendingItem.price, state.pendingItem.size);
+    const toppingExtra = state.pendingItem.toppings.reduce((s, t) => s + t.price, 0);
+    state.pendingItem.unitPrice = base + toppingExtra;
     state.cart.push({ ...state.pendingItem });
     updateCartPill();
     goToStep(2);
-    // Brief success feedback
     const btn = panel.querySelector('#addToCartBtn');
     btn.textContent = '✓ 已加入訂單！';
     btn.style.background = 'var(--green)';
-    setTimeout(() => {
-      btn.textContent = '加入訂單';
-      btn.style.background = '';
-    }, 1200);
+    setTimeout(() => { btn.textContent = '加入訂單'; btn.style.background = ''; }, 1200);
   });
 }
 
@@ -980,17 +1031,28 @@ function renderStep3(shopId) {
    CART
 ══════════════════════════════════════════════ */
 function updateCartPill() {
-  const total = state.cart.reduce((sum, item) => sum + item.qty, 0);
-  document.getElementById('cartCount').textContent = total;
-  document.getElementById('cartPill').classList.toggle('visible', total > 0);
+  const count = state.cart.reduce((s, i) => s + i.qty, 0);
+  const total = state.cart.reduce((s, i) => s + (i.unitPrice || 0) * i.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotal').textContent = total;
+  document.getElementById('cartPill').classList.toggle('visible', count > 0);
 }
 
 function showSummary() {
   const overlay = document.getElementById('summaryOverlay');
   const itemsEl = document.getElementById('summaryItems');
+  const memberRow = document.getElementById('summaryMemberRow');
 
-  itemsEl.innerHTML = state.cart.map((item, idx) => {
+  if (session.name && session.code) {
+    memberRow.textContent = `${session.name} 的訂單・暗號：${session.code}`;
+    memberRow.style.display = '';
+  } else {
+    memberRow.style.display = 'none';
+  }
+
+  itemsEl.innerHTML = state.cart.map(item => {
     const toppingStr = item.toppings.length ? item.toppings.map(t => t.name).join('、') : '無';
+    const lineTotal = (item.unitPrice || 0) * item.qty;
     return `
       <div class="summary-item-row">
         <div class="summary-item-name">${item.name}</div>
@@ -998,12 +1060,13 @@ function showSummary() {
         ${item.notes ? `<div class="summary-item-detail" style="color:var(--brown)">備註：${item.notes}</div>` : ''}
         <div class="summary-item-price-row">
           <span class="summary-item-qty">× ${item.qty}</span>
-          <span class="summary-item-price">${item.price}</span>
+          <span class="summary-item-price">$${lineTotal}</span>
         </div>
       </div>`;
   }).join('');
 
-  document.getElementById('summaryTotal').textContent = `${state.cart.reduce((s,i) => s + i.qty, 0)} 項`;
+  const grandTotal = state.cart.reduce((s, i) => s + (i.unitPrice || 0) * i.qty, 0);
+  document.getElementById('summaryTotal').textContent = `$${grandTotal}`;
   overlay.classList.add('open');
 }
 
@@ -1055,14 +1118,25 @@ document.getElementById('btnNext').addEventListener('click', () => {
   if (state.step === 1) goToStep(2);
 });
 
-// Cart pill → show summary
 document.getElementById('cartPill').addEventListener('click', () => {
   if (state.cart.length > 0) showSummary();
 });
 
-// Summary overlay
 document.getElementById('summaryConfirm').addEventListener('click', () => {
-  alert('✅ 訂單送出！（Firebase 串接後將儲存至資料庫）');
+  // Save order to localStorage (Firebase will replace this)
+  if (session.code && session.name) {
+    const key = 'drinks_orders_' + session.code;
+    const orders = JSON.parse(localStorage.getItem(key) || '{}');
+    orders[session.name] = orders[session.name] || [];
+    orders[session.name].push({
+      shopId: state.shopId,
+      items: state.cart,
+      total: state.cart.reduce((s,i) => s + (i.unitPrice||0)*i.qty, 0),
+      time: new Date().toISOString(),
+    });
+    localStorage.setItem(key, JSON.stringify(orders));
+  }
+  alert('✅ 訂單已送出！');
   document.getElementById('summaryOverlay').classList.remove('open');
   closeModal();
   state.cart = [];
@@ -1072,6 +1146,46 @@ document.getElementById('summaryBack').addEventListener('click', () => {
   document.getElementById('summaryOverlay').classList.remove('open');
 });
 
+// Session overlay events
+document.getElementById('stabCreate').addEventListener('click', () => {
+  document.getElementById('stabCreate').classList.add('active');
+  document.getElementById('stabJoin').classList.remove('active');
+  document.getElementById('createPanel').classList.add('active');
+  document.getElementById('joinPanel').classList.remove('active');
+});
+
+document.getElementById('stabJoin').addEventListener('click', () => {
+  document.getElementById('stabJoin').classList.add('active');
+  document.getElementById('stabCreate').classList.remove('active');
+  document.getElementById('joinPanel').classList.add('active');
+  document.getElementById('createPanel').classList.remove('active');
+});
+
+document.getElementById('genCodeBtn').addEventListener('click', () => {
+  document.getElementById('createCode').value = generateCode();
+});
+
+document.getElementById('createBtn').addEventListener('click', () => {
+  const name = document.getElementById('createName').value.trim();
+  const code = document.getElementById('createCode').value.trim();
+  if (!name) { alert('請輸入你的名字'); return; }
+  if (!code) { alert('請設定暗號'); return; }
+  saveSession(name, code);
+});
+
+document.getElementById('joinBtn').addEventListener('click', () => {
+  const name = document.getElementById('joinName').value.trim();
+  const code = document.getElementById('joinCode').value.trim();
+  if (!name) { alert('請輸入你的名字'); return; }
+  if (!code) { alert('請輸入暗號'); return; }
+  saveSession(name, code);
+});
+
+document.getElementById('sessionChangeBtn').addEventListener('click', () => {
+  localStorage.removeItem('drinks_session');
+  showSessionSetup();
+});
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('summaryOverlay').classList.remove('open');
@@ -1079,24 +1193,5 @@ document.addEventListener('keydown', e => {
   }
 });
 
-/* ══════════════════════════════════════════════
-   FIREBASE ARCHITECTURE (待串接)
-
-   當你有 Firebase config 時，在這裡加入：
-
-   import { initializeApp } from 'firebase/app';
-   import { getFirestore, collection, addDoc } from 'firebase/firestore';
-
-   const firebaseConfig = { ... }; // 你的 config
-   const app = initializeApp(firebaseConfig);
-   const db = getFirestore(app);
-
-   Firestore 資料結構：
-   /sessions/{sessionId}          ← 一桌 / 一群朋友共用
-     shopId, shopName, createdAt, status
-
-   /sessions/{sessionId}/orders/{orderId}
-     userId, items[], submittedAt, totalQty
-
-   分享方式：URL 帶 ?session=xxx 讓朋友加入同一桌
-══════════════════════════════════════════════ */
+/* ══ INIT ══ */
+initSession();
