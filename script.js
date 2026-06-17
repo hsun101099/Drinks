@@ -683,7 +683,7 @@ const menuData = {
 function getAvailableSizes(priceStr) {
   const hasM = /M\$/.test(priceStr);
   const hasL = /L\$/.test(priceStr);
-  if (!hasM && !hasL) return { M: false, L: true }; // single/fixed price → L only
+  if (!hasM && !hasL) return { M: false, L: true };
   return { M: hasM, L: hasL };
 }
 
@@ -692,6 +692,13 @@ function parsePrice(priceStr, size) {
   if (size === 'L') { const l = priceStr.match(/L\$(\d+)/); if (l) return parseInt(l[1]); }
   const any = priceStr.match(/\$(\d+)/);
   return any ? parseInt(any[1]) : 0;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 /* ══════════════════════════════════════════════
@@ -724,11 +731,33 @@ function showSessionSetup() {
   document.getElementById('sessionOverlay').classList.remove('hidden');
 }
 
+let statsUnsub = null;
+
 function showSessionBanner() {
   const banner = document.getElementById('sessionBanner');
-  banner.style.display = 'flex';
+  banner.style.display = '';
   document.getElementById('sessionBannerText').textContent =
-    `👥 ${session.name}・密碼：${session.code}`;
+    `👤 ${session.name}・密碼：${session.code}`;
+  startLiveStats();
+}
+
+function startLiveStats() {
+  if (statsUnsub) statsUnsub();
+  if (!session.code) return;
+  statsUnsub = db.collection('sessions').doc(session.code)
+    .collection('orders').onSnapshot(snap => {
+      const members = new Set();
+      let cups = 0, total = 0;
+      snap.docs.forEach(d => {
+        const data = d.data();
+        members.add(data.memberName);
+        (data.items || []).forEach(it => { cups += it.qty; total += (it.unitPrice||0) * it.qty; });
+      });
+      document.getElementById('bannerStats').innerHTML =
+        `<span class="stat-chip">${members.size} 人已點</span>` +
+        `<span class="stat-chip">${cups} 杯</span>` +
+        `<span class="stat-chip">$${total}</span>`;
+    });
 }
 
 function persistSession(name, code) {
@@ -1245,75 +1274,233 @@ document.getElementById('joinBtn').addEventListener('click', async () => {
 });
 
 // Order manager
-document.getElementById('orderMgrBtn').addEventListener('click', () => {
-  showOrderManager();
-});
-
 let orderUnsub = null;
+let cachedSnap = null;
+let mgrViewMode = 'members';
+
+document.getElementById('orderMgrBtn').addEventListener('click', () => showOrderManager());
 
 function showOrderManager() {
   if (!session.code) { alert('請先建立或加入訂單'); return; }
   const content = document.getElementById('orderMgrContent');
   content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">載入中…</p>';
   document.getElementById('orderMgrOverlay').classList.add('open');
+  mgrViewMode = 'members';
+  document.getElementById('mgrTabMembers').classList.add('active');
+  document.getElementById('mgrTabShop').classList.remove('active');
 
   if (orderUnsub) orderUnsub();
   orderUnsub = db.collection('sessions').doc(session.code)
     .collection('orders').orderBy('time','asc')
     .onSnapshot(snap => {
-      if (snap.empty) {
-        content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">目前還沒有人送出訂單</p>';
-        document.getElementById('orderMgrTotal').textContent = '$0';
-        return;
-      }
-      let grandTotal = 0;
-      const grouped = {};
-      snap.docs.forEach(doc => {
-        const d = doc.data();
-        if (!grouped[d.memberName]) grouped[d.memberName] = [];
-        grouped[d.memberName].push(d);
-        grandTotal += d.total || 0;
-      });
-
-      content.innerHTML = Object.entries(grouped).map(([member, orders]) => {
-        const memberTotal = orders.reduce((s,o) => s + (o.total||0), 0);
-        return orders.map(order => `
-          <div class="order-member-group">
-            <div class="order-member-name">${member}（$${order.total || 0}）</div>
-            ${(order.items||[]).map(it => `
-              <div class="order-item-mini">
-                <div>
-                  <div>${it.name} × ${it.qty}</div>
-                  <div class="order-item-detail">${it.size}｜${it.sweetness}｜${it.ice}${it.toppings && it.toppings.length ? '｜' + it.toppings.map(t=>t.name).join('、') : ''}</div>
-                  ${it.notes ? '<div class="order-item-detail">備註：' + it.notes + '</div>' : ''}
-                </div>
-                <span style="font-weight:600;color:var(--brown)">$${(it.unitPrice||0)*it.qty}</span>
-              </div>`).join('')}
-          </div>`).join('');
-      }).join('');
-
-      document.getElementById('orderMgrTotal').textContent = `$${grandTotal}`;
-    }, err => {
-      content.innerHTML = '<p style="text-align:center;color:#c0392b;padding:20px">載入失敗，請確認網路連線</p>';
+      cachedSnap = snap;
+      renderOrderView();
+    }, () => {
+      content.innerHTML = '<p style="text-align:center;color:#c0392b;padding:20px">載入失敗</p>';
     });
 }
+
+function renderOrderView() {
+  if (!cachedSnap) return;
+  if (mgrViewMode === 'members') renderMembersView(cachedSnap);
+  else renderShopView(cachedSnap);
+}
+
+function renderMembersView(snap) {
+  const content = document.getElementById('orderMgrContent');
+  if (snap.empty) {
+    content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">目前還沒有人送出訂單</p>';
+    document.getElementById('orderMgrTotal').textContent = '$0';
+    return;
+  }
+  let grandTotal = 0;
+  const grouped = {};
+  snap.docs.forEach(doc => {
+    const d = doc.data();
+    if (!grouped[d.memberName]) grouped[d.memberName] = [];
+    grouped[d.memberName].push({ ...d, _id: doc.id });
+    grandTotal += d.total || 0;
+  });
+
+  content.innerHTML = Object.entries(grouped).map(([member, orders]) =>
+    orders.map(order => {
+      const canDel = member === session.name;
+      return `<div class="order-member-group">
+        <div class="order-member-name">
+          <span>${member}（$${order.total || 0}）</span>
+          ${canDel ? `<button class="delete-order-btn" data-id="${order._id}">刪除</button>` : ''}
+        </div>
+        ${(order.items||[]).map(it => `
+          <div class="order-item-mini">
+            <div>
+              <div>${it.name} × ${it.qty}</div>
+              <div class="order-item-detail">${it.size}｜${it.sweetness}｜${it.ice}${it.toppings?.length ? '｜' + it.toppings.map(t=>t.name).join('、') : ''}</div>
+              ${it.notes ? '<div class="order-item-detail">備註：' + it.notes + '</div>' : ''}
+            </div>
+            <span style="font-weight:600;color:var(--brown)">$${(it.unitPrice||0)*it.qty}</span>
+          </div>`).join('')}
+      </div>`;
+    }).join('')
+  ).join('');
+
+  content.querySelectorAll('.delete-order-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('確定要刪除此筆訂單？')) return;
+      await db.collection('sessions').doc(session.code).collection('orders').doc(btn.dataset.id).delete();
+      showToast('已刪除訂單');
+    });
+  });
+
+  document.getElementById('orderMgrTotal').textContent = `$${grandTotal}`;
+}
+
+function renderShopView(snap) {
+  const content = document.getElementById('orderMgrContent');
+  if (snap.empty) {
+    content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px">目前還沒有人送出訂單</p>';
+    return;
+  }
+  const byShop = {};
+  let grandTotal = 0;
+  snap.docs.forEach(doc => {
+    const d = doc.data();
+    const shopName = menuData[d.shopId]?.name || d.shopId;
+    if (!byShop[shopName]) byShop[shopName] = {};
+    (d.items||[]).forEach(it => {
+      const key = `${it.size}｜${it.name}｜${it.sweetness}｜${it.ice}${it.toppings?.length ? '｜' + it.toppings.map(t=>t.name).join('+') : ''}${it.notes ? '｜備註:'+it.notes : ''}`;
+      if (!byShop[shopName][key]) byShop[shopName][key] = { ...it, totalQty: 0 };
+      byShop[shopName][key].totalQty += it.qty;
+      grandTotal += (it.unitPrice||0) * it.qty;
+    });
+  });
+
+  content.innerHTML = Object.entries(byShop).map(([shop, items]) => {
+    const totalCups = Object.values(items).reduce((s,i) => s + i.totalQty, 0);
+    return `<div class="shop-order-group">
+      <div class="shop-order-title">🧋 ${shop}（共 ${totalCups} 杯）</div>
+      ${Object.entries(items).map(([key, it]) => `
+        <div class="shop-order-line">
+          <span>${it.size} ${it.name} ${it.sweetness} ${it.ice}${it.toppings?.length ? ' +' + it.toppings.map(t=>t.name).join('+') : ''}${it.notes ? ' ('+it.notes+')' : ''}</span>
+          <span style="font-weight:700">×${it.totalQty}</span>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  document.getElementById('orderMgrTotal').textContent = `$${grandTotal}`;
+}
+
+// LINE format export
+function generateLineText() {
+  if (!cachedSnap || cachedSnap.empty) return '目前沒有訂單';
+  const grouped = {};
+  let grandTotal = 0;
+  cachedSnap.docs.forEach(doc => {
+    const d = doc.data();
+    if (!grouped[d.memberName]) grouped[d.memberName] = [];
+    grouped[d.memberName].push(d);
+    grandTotal += d.total || 0;
+  });
+  let cups = 0;
+  let text = '📋 飲料訂單彙整\n━━━━━━━━━━━━\n';
+  Object.entries(grouped).forEach(([member, orders]) => {
+    text += `\n👤 ${member}\n`;
+    orders.forEach(order => {
+      (order.items||[]).forEach(it => {
+        cups += it.qty;
+        text += `  ${it.size} ${it.name} ${it.sweetness}${it.ice} ×${it.qty}（$${(it.unitPrice||0)*it.qty}）\n`;
+        if (it.toppings?.length) text += `    加料：${it.toppings.map(t=>t.name).join('、')}\n`;
+        if (it.notes) text += `    備註：${it.notes}\n`;
+      });
+    });
+  });
+  text += `\n━━━━━━━━━━━━\n📊 共 ${cups} 杯 ｜ 合計 $${grandTotal}`;
+  return text;
+}
+
+function generateShopText() {
+  if (!cachedSnap || cachedSnap.empty) return '目前沒有訂單';
+  const byShop = {};
+  cachedSnap.docs.forEach(doc => {
+    const d = doc.data();
+    const shopName = menuData[d.shopId]?.name || d.shopId;
+    if (!byShop[shopName]) byShop[shopName] = {};
+    (d.items||[]).forEach(it => {
+      const key = `${it.size} ${it.name} ${it.sweetness}${it.ice}${it.toppings?.length ? ' +' + it.toppings.map(t=>t.name).join('+') : ''}${it.notes ? ' ('+it.notes+')' : ''}`;
+      byShop[shopName][key] = (byShop[shopName][key] || 0) + it.qty;
+    });
+  });
+  let text = '';
+  Object.entries(byShop).forEach(([shop, items]) => {
+    const total = Object.values(items).reduce((s,n) => s + n, 0);
+    text += `🧋 ${shop}（共 ${total} 杯）\n━━━━━━━━━━━━\n`;
+    Object.entries(items).forEach(([desc, qty]) => { text += `${desc} ×${qty}\n`; });
+    text += '\n';
+  });
+  return text.trim();
+}
+
+document.getElementById('copyLineBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(generateLineText()).then(() => showToast('✅ 已複製 LINE 訂單格式'));
+});
+
+document.getElementById('copyShopBtn').addEventListener('click', () => {
+  navigator.clipboard.writeText(generateShopText()).then(() => showToast('✅ 已複製叫貨單'));
+});
+
+document.getElementById('mgrTabMembers').addEventListener('click', () => {
+  mgrViewMode = 'members';
+  document.getElementById('mgrTabMembers').classList.add('active');
+  document.getElementById('mgrTabShop').classList.remove('active');
+  renderOrderView();
+});
+
+document.getElementById('mgrTabShop').addEventListener('click', () => {
+  mgrViewMode = 'shop';
+  document.getElementById('mgrTabShop').classList.add('active');
+  document.getElementById('mgrTabMembers').classList.remove('active');
+  renderOrderView();
+});
 
 document.getElementById('orderMgrClose').addEventListener('click', () => {
   document.getElementById('orderMgrOverlay').classList.remove('open');
   if (orderUnsub) { orderUnsub(); orderUnsub = null; }
 });
 
+// Share
+document.getElementById('shareBtn').addEventListener('click', () => {
+  const url = `${location.origin}${location.pathname}?code=${session.code}`;
+  navigator.clipboard.writeText(url).then(() => showToast('✅ 已複製分享連結'));
+});
+
 document.getElementById('sessionChangeBtn').addEventListener('click', () => {
+  if (statsUnsub) { statsUnsub(); statsUnsub = null; }
   localStorage.removeItem('drinks_session');
+  session.code = null; session.name = null;
+  document.getElementById('sessionBanner').style.display = 'none';
+  document.getElementById('bannerStats').innerHTML = '';
   showSessionSetup();
 });
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.getElementById('summaryOverlay').classList.remove('open');
+    document.getElementById('orderMgrOverlay').classList.remove('open');
+    if (orderUnsub) { orderUnsub(); orderUnsub = null; }
     closeModal();
   }
 });
 
+// Auto-join via URL param
+function checkUrlCode() {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  if (code) {
+    document.getElementById('stabJoin').click();
+    document.getElementById('joinCode').value = code;
+    history.replaceState(null, '', location.pathname);
+  }
+}
+
 /* ══ INIT ══ */
 initSession();
+checkUrlCode();

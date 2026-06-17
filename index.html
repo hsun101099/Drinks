@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260616" />
+  <link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
 
@@ -41,54 +41,32 @@
     </div>
   </div>
 
-  <nav class="navbar">
-    <button class="nav-menu-btn">
-      <span class="hamburger"></span>
-      <span class="hamburger"></span>
-      <span class="hamburger"></span>
-    </button>
-    <span class="nav-title">選單</span>
-    <div class="nav-actions">
-      <button class="nav-icon-btn" title="登入">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </button>
-      <button class="nav-icon-btn" title="購物車">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-        </svg>
-      </button>
-    </div>
-  </nav>
+  <!-- ── Toast Notification ── -->
+  <div class="toast" id="toast"></div>
 
-  <!-- Session Banner -->
+  <!-- ── Session Banner (live stats) ── -->
   <div class="session-banner" id="sessionBanner" style="display:none">
-    <span id="sessionBannerText"></span>
-    <button class="session-change-btn" id="orderMgrBtn">管理訂單</button>
-    <button class="session-change-btn" id="sessionChangeBtn">換團</button>
+    <div class="banner-top">
+      <span id="sessionBannerText"></span>
+      <div class="banner-actions">
+        <button class="banner-btn" id="shareBtn" title="分享連結">📤 分享</button>
+        <button class="banner-btn" id="orderMgrBtn">📋 管理</button>
+        <button class="banner-btn" id="sessionChangeBtn">🔄 換團</button>
+      </div>
+    </div>
+    <div class="banner-stats" id="bannerStats"></div>
   </div>
 
   <section class="hero">
     <div class="hero-content">
-      <div class="hero-text">
-        <p class="hero-sub">歡迎來到</p>
-        <h1 class="hero-title">點飲料吧！</h1>
-        <p class="hero-desc">精選台灣人氣品牌，團購最方便</p>
-      </div>
-    </div>
-    <div class="hero-dots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
+      <p class="hero-sub">歡迎來到</p>
+      <h1 class="hero-title">點飲料吧！</h1>
+      <p class="hero-desc">精選台灣人氣品牌，團購最方便</p>
     </div>
   </section>
 
   <section class="shops-section">
     <div class="shops-grid" id="shopsGrid">
-
       <div class="shop-card" data-shop="50lan">
         <div class="card-logo"><img src="images/logo-50lan.png" alt="50嵐" /></div>
         <h3 class="card-name">50嵐</h3>
@@ -125,21 +103,16 @@
         <div class="card-logo"><img src="images/logo-comebuy.png" alt="COMEBUY" /></div>
         <h3 class="card-name">COMEBUY</h3>
       </div>
-
     </div>
   </section>
 
   <!-- ── 3-Step Modal ── -->
   <div class="modal-overlay" id="menuModal">
     <div class="modal">
-
       <div class="modal-handle"></div>
-
       <div class="modal-header">
         <div class="modal-shop-row">
-          <div class="modal-logo-wrap">
-            <img id="modalLogo" src="" alt="" />
-          </div>
+          <div class="modal-logo-wrap"><img id="modalLogo" src="" alt="" /></div>
           <div>
             <h2 id="modalTitle" class="modal-title"></h2>
             <p id="modalDesc" class="modal-subtitle"></p>
@@ -147,38 +120,23 @@
         </div>
         <button class="modal-close" id="modalClose">✕</button>
       </div>
-
       <div class="steps-bar">
-        <div class="step-item" id="si1">
-          <div class="step-num">1</div>
-          <span class="step-lbl">瀏覽菜單</span>
-        </div>
+        <div class="step-item" id="si1"><div class="step-num">1</div><span class="step-lbl">瀏覽菜單</span></div>
         <div class="step-track"><div class="step-fill" id="fill1"></div></div>
-        <div class="step-item" id="si2">
-          <div class="step-num">2</div>
-          <span class="step-lbl">選擇品項</span>
-        </div>
+        <div class="step-item" id="si2"><div class="step-num">2</div><span class="step-lbl">選擇品項</span></div>
         <div class="step-track"><div class="step-fill" id="fill2"></div></div>
-        <div class="step-item" id="si3">
-          <div class="step-num">3</div>
-          <span class="step-lbl">客製選項</span>
-        </div>
+        <div class="step-item" id="si3"><div class="step-num">3</div><span class="step-lbl">客製選項</span></div>
       </div>
-
       <div class="panel-container">
         <div class="step-panel" id="panel1"></div>
         <div class="step-panel" id="panel2"></div>
         <div class="step-panel" id="panel3"></div>
       </div>
-
       <div class="modal-footer">
         <button class="foot-btn back-btn" id="btnBack">← 返回</button>
-        <div class="cart-pill" id="cartPill">
-          <span id="cartCount">0</span> 項・$<span id="cartTotal">0</span>
-        </div>
+        <div class="cart-pill" id="cartPill"><span id="cartCount">0</span> 項・$<span id="cartTotal">0</span></div>
         <button class="foot-btn next-btn" id="btnNext">開始點餐 →</button>
       </div>
-
     </div>
   </div>
 
@@ -188,10 +146,7 @@
       <h2 class="summary-title">🧾 訂單明細</h2>
       <div class="summary-member-row" id="summaryMemberRow"></div>
       <div class="summary-items" id="summaryItems"></div>
-      <div class="summary-total-row">
-        <span>合計</span>
-        <span id="summaryTotal"></span>
-      </div>
+      <div class="summary-total-row"><span>合計</span><span id="summaryTotal"></span></div>
       <button class="summary-confirm-btn" id="summaryConfirm">確認送出訂單</button>
       <button class="summary-back-btn" id="summaryBack">← 繼續點餐</button>
     </div>
@@ -200,11 +155,20 @@
   <!-- Order Manager Overlay -->
   <div class="summary-overlay" id="orderMgrOverlay">
     <div class="summary-box">
-      <h2 class="summary-title">📋 管理訂單</h2>
+      <div class="mgr-header">
+        <h2 class="summary-title">📋 管理訂單</h2>
+        <div class="mgr-tabs">
+          <button class="mgr-tab active" id="mgrTabMembers">依成員</button>
+          <button class="mgr-tab" id="mgrTabShop">叫貨單</button>
+        </div>
+      </div>
       <div id="orderMgrContent"></div>
       <div class="summary-total-row" id="orderMgrTotalRow">
-        <span>全部合計</span>
-        <span id="orderMgrTotal"></span>
+        <span>全部合計</span><span id="orderMgrTotal"></span>
+      </div>
+      <div class="mgr-actions">
+        <button class="mgr-action-btn" id="copyLineBtn">📋 複製 LINE 格式</button>
+        <button class="mgr-action-btn outline" id="copyShopBtn">🧋 複製叫貨單</button>
       </div>
       <button class="summary-back-btn" id="orderMgrClose">← 關閉</button>
     </div>
@@ -212,6 +176,6 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="script.js?v=20260616"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>
