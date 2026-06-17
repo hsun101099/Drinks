@@ -704,7 +704,7 @@ function showToast(msg) {
 /* ══════════════════════════════════════════════
    SESSION
 ══════════════════════════════════════════════ */
-const session = { code: null, name: null };
+const session = { code: null, name: null, isCreator: false, shopId: null };
 
 async function initSession() {
   const saved = localStorage.getItem('drinks_session');
@@ -718,9 +718,14 @@ async function initSession() {
         showSessionSetup();
         return;
       }
-      session.code = s.code; session.name = s.name;
+      const data = doc.data();
+      session.code = s.code;
+      session.name = s.name;
+      session.isCreator = data.createdBy === s.name;
+      session.shopId = data.shopId || null;
       showSessionBanner();
       document.getElementById('sessionOverlay').classList.add('hidden');
+      enterMainView();
     } catch { localStorage.removeItem('drinks_session'); showSessionSetup(); }
   } else {
     showSessionSetup();
@@ -729,6 +734,13 @@ async function initSession() {
 
 function showSessionSetup() {
   document.getElementById('sessionOverlay').classList.remove('hidden');
+  hideAllSections();
+}
+
+function hideAllSections() {
+  document.getElementById('pickShopSection').style.display = 'none';
+  document.getElementById('joinerSection').style.display = 'none';
+  document.getElementById('browseSection').style.display = 'none';
 }
 
 let statsUnsub = null;
@@ -775,7 +787,10 @@ async function createSession(name, code) {
     return;
   }
   await ref.set({ createdBy: name, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  session.isCreator = true;
+  session.shopId = null;
   persistSession(name, code);
+  showPickShop();
 }
 
 async function joinSession(name, code) {
@@ -785,7 +800,55 @@ async function joinSession(name, code) {
     document.getElementById('joinHint').textContent = '找不到此密碼的訂單，請確認是否正確';
     return;
   }
+  const data = doc.data();
+  session.isCreator = false;
+  session.shopId = data.shopId || null;
   persistSession(name, code);
+  enterMainView();
+}
+
+function enterMainView() {
+  hideAllSections();
+  if (session.isCreator && !session.shopId) {
+    showPickShop();
+  } else if (session.shopId) {
+    showJoinerView(session.shopId);
+  } else {
+    showPickShop();
+  }
+}
+
+function buildShopGrid(container, onClickHandler) {
+  container.innerHTML = Object.entries(menuData).map(([id, d]) => `
+    <div class="shop-card" data-shop="${id}">
+      <div class="card-logo"><img src="${d.logo}" alt="${d.name}" /></div>
+      <h3 class="card-name">${d.name}</h3>
+    </div>`).join('');
+  container.querySelectorAll('.shop-card').forEach(card => {
+    card.addEventListener('click', () => onClickHandler(card.dataset.shop));
+  });
+}
+
+function showPickShop() {
+  hideAllSections();
+  document.getElementById('pickShopSection').style.display = '';
+  const grid = document.getElementById('pickShopGrid');
+  buildShopGrid(grid, async (shopId) => {
+    if (!confirm(`確定選擇「${menuData[shopId].name}」？\n其他人加入後會直接看到這家店`)) return;
+    await db.collection('sessions').doc(session.code).update({ shopId });
+    session.shopId = shopId;
+    showJoinerView(shopId);
+  });
+}
+
+function showJoinerView(shopId) {
+  hideAllSections();
+  const data = menuData[shopId];
+  document.getElementById('joinerSection').style.display = '';
+  document.getElementById('joinerShopHero').innerHTML = `
+    <div class="joiner-shop-logo"><img src="${data.logo}" alt="${data.name}" /></div>
+    <div class="joiner-shop-name">${data.name}</div>
+    <div class="joiner-shop-desc">${data.desc}</div>`;
 }
 
 /* ══════════════════════════════════════════════
@@ -1153,24 +1216,32 @@ function showSummary() {
 /* ══════════════════════════════════════════════
    MODAL OPEN / CLOSE
 ══════════════════════════════════════════════ */
-function openShop(shopId) {
+function openShop(shopId, readOnly) {
   const data = menuData[shopId];
   state.shopId = shopId;
   state.cart = [];
   state.step = 0;
+  state.readOnly = !!readOnly;
 
   document.getElementById('modalLogo').src = data.logo;
   document.getElementById('modalLogo').alt = data.name;
   document.getElementById('modalTitle').textContent = data.name;
-  document.getElementById('modalDesc').textContent = data.desc;
+  document.getElementById('modalDesc').textContent = data.desc + (readOnly ? '（僅供瀏覽）' : '');
 
   renderStep1(shopId);
-  renderStep2(shopId);
+  if (!readOnly) {
+    renderStep2(shopId);
+  }
   document.getElementById('panel3').innerHTML = '';
 
   document.getElementById('menuModal').classList.add('open');
   document.body.style.overflow = 'hidden';
   goToStep(1);
+
+  const btnNext = document.getElementById('btnNext');
+  if (readOnly) {
+    btnNext.style.display = 'none';
+  }
 }
 
 function closeModal() {
@@ -1181,8 +1252,25 @@ function closeModal() {
 /* ══════════════════════════════════════════════
    EVENT LISTENERS
 ══════════════════════════════════════════════ */
-document.querySelectorAll('.shop-card').forEach(card => {
-  card.addEventListener('click', () => openShop(card.dataset.shop));
+// Joiner: open the session's shop
+document.getElementById('joinerOrderBtn').addEventListener('click', () => {
+  if (session.shopId) openShop(session.shopId);
+});
+
+// Browse other menus (read-only)
+document.getElementById('browseOthersBtn').addEventListener('click', () => {
+  const sec = document.getElementById('browseSection');
+  if (sec.style.display === 'none') {
+    sec.style.display = '';
+    const grid = document.getElementById('browseShopGrid');
+    if (!grid.hasChildNodes()) {
+      buildShopGrid(grid, (shopId) => {
+        openShop(shopId, true);
+      });
+    }
+  } else {
+    sec.style.display = 'none';
+  }
 });
 
 document.getElementById('modalClose').addEventListener('click', closeModal);
@@ -1258,7 +1346,7 @@ document.getElementById('createBtn').addEventListener('click', async () => {
   btn.disabled = true; btn.textContent = '建立中…';
   try { await createSession(name, code); }
   catch (e) { alert('連線失敗，請稍後再試'); }
-  btn.disabled = false; btn.textContent = '建立新訂單 →';
+  btn.disabled = false; btn.textContent = '下一步：選擇飲料店 →';
 });
 
 document.getElementById('joinBtn').addEventListener('click', async () => {
@@ -1268,8 +1356,12 @@ document.getElementById('joinBtn').addEventListener('click', async () => {
   if (!code || !/^\d+$/.test(code)) { alert('密碼請輸入純數字'); return; }
   const btn = document.getElementById('joinBtn');
   btn.disabled = true; btn.textContent = '加入中…';
-  try { await joinSession(name, code); }
-  catch (e) { alert('連線失敗，請稍後再試'); }
+  try {
+    await joinSession(name, code);
+    if (!session.shopId) {
+      showToast('主揪尚未選擇飲料店，請稍候');
+    }
+  } catch (e) { alert('連線失敗，請稍後再試'); }
   btn.disabled = false; btn.textContent = '加入訂單 →';
 });
 

@@ -27,7 +27,7 @@
         <input class="field-input" id="createName" placeholder="例：阿明、小花…" maxlength="12" />
         <label class="field-label">設定密碼</label>
         <input class="field-input" id="createCode" placeholder="請輸入數字密碼" maxlength="10" inputmode="numeric" pattern="[0-9]*" />
-        <button class="session-submit-btn" id="createBtn">建立新訂單 →</button>
+        <button class="session-submit-btn" id="createBtn">下一步：選擇飲料店 →</button>
       </div>
 
       <div class="spanel" id="joinPanel">
@@ -57,54 +57,35 @@
     <div class="banner-stats" id="bannerStats"></div>
   </div>
 
-  <section class="hero">
-    <div class="hero-content">
-      <p class="hero-sub">歡迎來到</p>
-      <h1 class="hero-title">點飲料吧！</h1>
-      <p class="hero-desc">精選台灣人氣品牌，團購最方便</p>
-    </div>
-  </section>
+  <!-- ── Main Content (dynamic) ── -->
+  <div id="mainContent">
 
-  <section class="shops-section">
-    <div class="shops-grid" id="shopsGrid">
-      <div class="shop-card" data-shop="50lan">
-        <div class="card-logo"><img src="images/logo-50lan.png" alt="50嵐" /></div>
-        <h3 class="card-name">50嵐</h3>
+    <!-- Shown to organizer picking a shop -->
+    <section class="pick-shop-section" id="pickShopSection" style="display:none">
+      <div class="pick-shop-header">
+        <h2 class="pick-shop-title">選擇今天要喝的飲料店</h2>
+        <p class="pick-shop-sub">選好後，其他人加入訂單就會直接看到這家店的菜單</p>
       </div>
-      <div class="shop-card" data-shop="coco">
-        <div class="card-logo"><img src="images/logo-coco.png" alt="CoCo都可" /></div>
-        <h3 class="card-name">CoCo 都可</h3>
+      <div class="shops-grid" id="pickShopGrid"></div>
+    </section>
+
+    <!-- Shown to joiner — direct ordering for the chosen shop -->
+    <section class="joiner-section" id="joinerSection" style="display:none">
+      <div class="joiner-shop-hero" id="joinerShopHero"></div>
+      <button class="joiner-order-btn" id="joinerOrderBtn">開始點餐 →</button>
+      <button class="browse-others-btn" id="browseOthersBtn">瀏覽其他飲料店菜單 ↓</button>
+    </section>
+
+    <!-- Browse all shops (read-only menus for joiners) -->
+    <section class="browse-section" id="browseSection" style="display:none">
+      <div class="browse-header">
+        <h3 class="browse-title">其他飲料店菜單</h3>
+        <p class="browse-sub">只供參考，本次訂單僅限主揪選的店家</p>
       </div>
-      <div class="shop-card" data-shop="qingshan">
-        <div class="card-logo"><img src="images/logo-qingshan.png" alt="青山" /></div>
-        <h3 class="card-name">青山</h3>
-      </div>
-      <div class="shop-card" data-shop="milkshop">
-        <div class="card-logo"><img src="images/logo-milkshop.png" alt="迷客夏" /></div>
-        <h3 class="card-name">迷客夏</h3>
-      </div>
-      <div class="shop-card" data-shop="macu">
-        <div class="card-logo"><img src="images/logo-macu.png" alt="MACU" /></div>
-        <h3 class="card-name">MACU</h3>
-      </div>
-      <div class="shop-card" data-shop="kebuke">
-        <div class="card-logo"><img src="images/logo-kebuke.png" alt="可不可熟成紅茶" /></div>
-        <h3 class="card-name">可不可熟成紅茶</h3>
-      </div>
-      <div class="shop-card" data-shop="guiji">
-        <div class="card-logo"><img src="images/logo-guiji.png" alt="龜記" /></div>
-        <h3 class="card-name">龜記 GUIJI</h3>
-      </div>
-      <div class="shop-card" data-shop="qingfuquan">
-        <div class="card-logo"><img src="images/logo-qingfuquan.png" alt="清心福全" /></div>
-        <h3 class="card-name">清心福全</h3>
-      </div>
-      <div class="shop-card" data-shop="comebuy">
-        <div class="card-logo"><img src="images/logo-comebuy.png" alt="COMEBUY" /></div>
-        <h3 class="card-name">COMEBUY</h3>
-      </div>
-    </div>
-  </section>
+      <div class="shops-grid" id="browseShopGrid"></div>
+    </section>
+
+  </div>
 
   <!-- ── 3-Step Modal ── -->
   <div class="modal-overlay" id="menuModal">

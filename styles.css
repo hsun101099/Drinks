@@ -157,6 +157,45 @@ body {
 .card-logo img { width:100%;height:100%;object-fit:contain;padding:8px; }
 .card-name { font-size:0.8rem;font-weight:700;color:var(--text);text-align:center;line-height:1.3; }
 
+/* ── Pick Shop (organizer) ── */
+.pick-shop-section { padding: 20px 16px 40px; max-width: 520px; margin: 0 auto; }
+.pick-shop-header { text-align: center; padding: 24px 16px 16px; }
+.pick-shop-title { font-family: 'Noto Serif TC', serif; font-size: 1.3rem; font-weight: 900; color: var(--brown); }
+.pick-shop-sub { font-size: 0.78rem; color: var(--text-light); margin-top: 6px; }
+
+/* ── Joiner Section ── */
+.joiner-section { padding: 20px 16px 40px; max-width: 520px; margin: 0 auto; text-align: center; }
+.joiner-shop-hero {
+  background: var(--white); border-radius: 20px; padding: 28px 20px;
+  box-shadow: var(--shadow); margin-bottom: 16px; display: flex;
+  flex-direction: column; align-items: center; gap: 10px;
+}
+.joiner-shop-logo { width: 90px; height: 90px; border-radius: 20px; overflow: hidden; background: var(--warm); display: flex; align-items: center; justify-content: center; }
+.joiner-shop-logo img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+.joiner-shop-name { font-family: 'Noto Serif TC', serif; font-size: 1.4rem; font-weight: 900; color: var(--brown); }
+.joiner-shop-desc { font-size: 0.8rem; color: var(--text-light); }
+
+.joiner-order-btn {
+  width: 100%; padding: 16px; border: none; border-radius: 16px;
+  background: var(--brown); color: var(--white);
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  transition: background 0.2s; margin-bottom: 12px;
+}
+.joiner-order-btn:hover { background: var(--brown-dark); }
+
+.browse-others-btn {
+  width: 100%; padding: 12px; border: 1.5px solid var(--warm);
+  border-radius: 14px; background: transparent; color: var(--text-light);
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+}
+.browse-others-btn:hover { background: var(--warm); color: var(--brown); }
+
+/* ── Browse Section (read-only) ── */
+.browse-section { padding: 10px 16px 40px; max-width: 520px; margin: 0 auto; }
+.browse-header { text-align: center; padding: 10px 0 14px; border-top: 1.5px dashed var(--warm); margin-top: 10px; }
+.browse-title { font-size: 0.9rem; font-weight: 700; color: var(--brown); }
+.browse-sub { font-size: 0.72rem; color: var(--text-light); margin-top: 4px; }
+
 /* ══════════════════════════════
    3-Step Modal
 ══════════════════════════════ */
