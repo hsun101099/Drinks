@@ -1,0 +1,50 @@
+{
+  "rules": [
+    {
+      "name": "社群通知",
+      "label": "社群通知",
+      "conditions": {
+        "from": ["facebook.com", "twitter.com", "instagram.com", "linkedin.com"]
+      },
+      "action": "label"
+    },
+    {
+      "name": "電商促銷",
+      "label": "電商促銷",
+      "conditions": {
+        "from": ["shopee.tw", "momo.com", "pchome.com", "amazon.com"],
+        "subject_contains": ["促銷", "折扣", "特價", "sale", "discount", "優惠"]
+      },
+      "action": "label_and_archive"
+    },
+    {
+      "name": "電子報",
+      "label": "電子報",
+      "conditions": {
+        "from": ["newsletter", "noreply", "no-reply", "updates@"],
+        "subject_contains": ["newsletter", "電子報", "週報", "月報"]
+      },
+      "action": "label"
+    },
+    {
+      "name": "GitHub 通知",
+      "label": "GitHub",
+      "conditions": {
+        "from": ["notifications@github.com"]
+      },
+      "action": "label"
+    },
+    {
+      "name": "舊郵件歸檔",
+      "conditions": {
+        "older_than_days": 180,
+        "is_read": true
+      },
+      "action": "archive"
+    }
+  ],
+  "cleanup": {
+    "archive_read_promotions_older_than_days": 30,
+    "archive_read_social_older_than_days": 60
+  }
+}
