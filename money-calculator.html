@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💰 零錢試算表</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:        #fdf6ec;
+      --warm:         #f5e6c8;
+      --brown:        #8b5e3c;
+      --brown-light:  #c9a96e;
+      --brown-dark:   #5c3d20;
+      --green:        #4a7c59;
+      --green-light:  #e8f5e9;
+      --text:         #3a2e22;
+      --text-light:   #8a7560;
+      --white:        #ffffff;
+      --shadow:       0 4px 20px rgba(139,94,60,0.10);
+      --radius:       16px;
+    }
+
+    html { font-size: 16px; }
+    body {
+      font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: linear-gradient(160deg, #fdf6ec 0%, #f0dfc0 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .header-icon { font-size: 3rem; margin-bottom: 8px; }
+    .header-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--brown);
+      margin-bottom: 4px;
+    }
+    .header-sub {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(139,94,60,0.12);
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--brown);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .denomination-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5efe6;
+      gap: 10px;
+    }
+    .denomination-row:last-child { border-bottom: none; }
+
+    .denom-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .denom-icon.bill {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      color: #2e7d32;
+    }
+    .denom-icon.coin {
+      background: linear-gradient(135deg, #fff8e1, #ffe082);
+      color: #f57f17;
+    }
+
+    .denom-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .denom-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .denom-sub {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 1px;
+    }
+
+    .denom-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1.5px solid var(--warm);
+      background: var(--white);
+      color: var(--brown);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .qty-btn:active {
+      background: var(--warm);
+      transform: scale(0.92);
+    }
+
+    .qty-input {
+      width: 48px;
+      text-align: center;
+      border: 1.5px solid var(--warm);
+      border-radius: 10px;
+      padding: 6px 2px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      font-family: inherit;
+      background: #fffdf8;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .qty-input:focus {
+      border-color: var(--brown);
+    }
+    .qty-input::-webkit-inner-spin-button,
+    .qty-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .qty-input { -moz-appearance: textfield; }
+
+    .subtotal {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--brown);
+      min-width: 60px;
+      text-align: right;
+    }
+    .subtotal.has-value {
+      color: var(--green);
+    }
+
+    /* Total Card */
+    .total-card {
+      background: linear-gradient(135deg, var(--brown), var(--brown-dark));
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(92,61,32,0.25);
+      text-align: center;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .total-label {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+    .total-amount {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+    .total-detail {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+    .total-detail span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Action Buttons */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .action-btn:active { transform: scale(0.97); }
+    .action-btn.primary {
+      background: var(--brown);
+      color: var(--white);
+    }
+    .action-btn.secondary {
+      background: var(--warm);
+      color: var(--brown);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--brown-dark);
+      color: var(--white);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--brown); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back-link">← 回到點飲料</a>
+
+    <div class="header">
+      <div class="header-icon">💰</div>
+      <h1 class="header-title">零錢試算表</h1>
+      <p class="header-sub">輸入每種面額的數量，自動計算總金額</p>
+    </div>
+
+    <!-- Total -->
+    <div class="total-card" id="totalCard">
+      <div class="total-label">你身上的總金額</div>
+      <div class="total-amount" id="totalAmount">$0</div>
+      <div class="total-detail">
+        <span>🏦 紙鈔：<b id="totalBills">$0</b></span>
+        <span>🪙 硬幣：<b id="totalCoins">$0</b></span>
+      </div>
+    </div>
+
+    <!-- Bills -->
+    <div class="card">
+      <div class="section-label">🏦 紙鈔</div>
+      <div id="billRows"></div>
+    </div>
+
+    <!-- Coins -->
+    <div class="card">
+      <div class="section-label">🪙 硬幣</div>
+      <div id="coinRows"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="action-btn secondary" id="resetBtn">🗑️ 清除</button>
+      <button class="action-btn primary" id="copyBtn">📋 複製結果</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const denominations = [
+      { value: 2000, label: '$2,000', type: 'bill', color: '#8e24aa' },
+      { value: 1000, label: '$1,000', type: 'bill', color: '#1565c0' },
+      { value: 500,  label: '$500',   type: 'bill', color: '#ad6800' },
+      { value: 200,  label: '$200',   type: 'bill', color: '#2e7d32' },
+      { value: 100,  label: '$100',   type: 'bill', color: '#c62828' },
+      { value: 50,   label: '$50',    type: 'coin', color: '#6d4c41' },
+      { value: 10,   label: '$10',    type: 'coin', color: '#ef6c00' },
+      { value: 5,    label: '$5',     type: 'coin', color: '#d84315' },
+      { value: 1,    label: '$1',     type: 'coin', color: '#78909c' },
+    ];
+
+    const state = {};
+
+    function init() {
+      const billContainer = document.getElementById('billRows');
+      const coinContainer = document.getElementById('coinRows');
+
+      denominations.forEach(d => {
+        state[d.value] = 0;
+        const container = d.type === 'bill' ? billContainer : coinContainer;
+        container.appendChild(createRow(d));
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', resetAll);
+      document.getElementById('copyBtn').addEventListener('click', copyResult);
+    }
+
+    function createRow(d) {
+      const row = document.createElement('div');
+      row.className = 'denomination-row';
+
+      row.innerHTML = `
+        <div class="denom-icon ${d.type}">
+          ${d.label}
+        </div>
+        <div class="denom-info">
+          <div class="denom-name">${d.type === 'bill' ? d.label + ' 元紙鈔' : d.label + ' 元硬幣'}</div>
+          <div class="denom-sub">面額 ${d.value.toLocaleString()} 元</div>
+        </div>
+        <div class="denom-controls">
+          <button class="qty-btn" data-action="minus" data-value="${d.value}">−</button>
+          <input class="qty-input" type="number" min="0" max="9999" value="0"
+                 data-value="${d.value}" inputmode="numeric" />
+          <button class="qty-btn" data-action="plus" data-value="${d.value}">+</button>
+        </div>
+        <div class="subtotal" id="sub-${d.value}">$0</div>
+      `;
+
+      const minusBtn = row.querySelector('[data-action="minus"]');
+      const plusBtn = row.querySelector('[data-action="plus"]');
+      const input = row.querySelector('.qty-input');
+
+      minusBtn.addEventListener('click', () => {
+        const cur = state[d.value];
+        if (cur > 0) {
+          state[d.value] = cur - 1;
+          input.value = state[d.value];
+          recalc();
+        }
+      });
+
+      plusBtn.addEventListener('click', () => {
+        state[d.value] = state[d.value] + 1;
+        input.value = state[d.value];
+        recalc();
+      });
+
+      input.addEventListener('input', () => {
+        const v = parseInt(input.value, 10);
+        state[d.value] = isNaN(v) || v < 0 ? 0 : v;
+        recalc();
+      });
+
+      input.addEventListener('focus', () => {
+        if (input.value === '0') input.value = '';
+      });
+
+      input.addEventListener('blur', () => {
+        if (input.value === '') {
+          state[d.value] = 0;
+          input.value = '0';
+          recalc();
+        }
+      });
+
+      return row;
+    }
+
+    function recalc() {
+      let totalBills = 0;
+      let totalCoins = 0;
+
+      denominations.forEach(d => {
+        const sub = d.value * state[d.value];
+        const el = document.getElementById(`sub-${d.value}`);
+        el.textContent = `$${sub.toLocaleString()}`;
+        el.classList.toggle('has-value', sub > 0);
+
+        if (d.type === 'bill') totalBills += sub;
+        else totalCoins += sub;
+      });
+
+      const grand = totalBills + totalCoins;
+      document.getElementById('totalAmount').textContent = `$${grand.toLocaleString()}`;
+      document.getElementById('totalBills').textContent = `$${totalBills.toLocaleString()}`;
+      document.getElementById('totalCoins').textContent = `$${totalCoins.toLocaleString()}`;
+    }
+
+    function resetAll() {
+      denominations.forEach(d => {
+        state[d.value] = 0;
+      });
+      document.querySelectorAll('.qty-input').forEach(inp => inp.value = '0');
+      recalc();
+      showToast('已清除所有數量');
+    }
+
+    function copyResult() {
+      const lines = ['💰 零錢試算結果', '─────────────'];
+      denominations.forEach(d => {
+        const qty = state[d.value];
+        if (qty > 0) {
+          const sub = d.value * qty;
+          lines.push(`${d.label} × ${qty} = $${sub.toLocaleString()}`);
+        }
+      });
+
+      const totalBills = denominations
+        .filter(d => d.type === 'bill')
+        .reduce((s, d) => s + d.value * state[d.value], 0);
+      const totalCoins = denominations
+        .filter(d => d.type === 'coin')
+        .reduce((s, d) => s + d.value * state[d.value], 0);
+      const grand = totalBills + totalCoins;
+
+      lines.push('─────────────');
+      lines.push(`🏦 紙鈔小計：$${totalBills.toLocaleString()}`);
+      lines.push(`🪙 硬幣小計：$${totalCoins.toLocaleString()}`);
+      lines.push(`💵 總金額：$${grand.toLocaleString()}`);
+
+      navigator.clipboard.writeText(lines.join('\n')).then(() => {
+        showToast('已複製到剪貼簿！');
+      }).catch(() => {
+        showToast('複製失敗，請手動複製');
+      });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    init();
+  </script>
+</body>
+</html>
